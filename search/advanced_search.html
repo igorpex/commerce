@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Advanced Search</title>
+    <link rel="stylesheet" href='style.css'>
+</head>
+
+<body>
+    <header>
+        <nav class="nav">
+            <ul>
+                <li><a href="index.html">Basic Search</a></li>
+                <li><a href="images_search.html">Images Search</a></li>
+            </ul>
+            </div>
+        </nav>
+        <div class="heading">
+            <label>Advanced Search</label>
+        </div>
+        <div class="splitter"></div>
+    </header>
+
+    <main class='main'>
+        <form class='adv-form' action="https://google.com/search">
+            <div class="table">
+                <div class="tr">
+                    <div class="t1 th1">
+                        <span>Find pages with:</span>
+                    </div>
+                    <div class="t2 th2"></div>
+                    <div class="t3 th3">To do this in the search box.</div>
+                </div>
+                <div class="tr">
+                    <div class="t1">
+                        <div style="height:100%">all these words</div>
+                    </div>
+                    <div class="t2">
+                        <input class="adv-s-input" type="text" name="as_q">
+                    </div>
+                    <div class="t3">
+                        <div class="t3-text">Type the important words: <span class="example">tri-colour rat terrier</span></div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="t1">this exact word or phrase:
+                    </div>
+                    <div class="t2">
+                        <input class="adv-s-input" type="text" name="as_epq">
+                    </div>
+                    <div class="t3">
+                        <div class="t3-text">Put exact words in quotes: <span class="example">"rat terrier"</span></div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="t1">any of these words:</div>
+                    <div class="t2">
+                        <input class="adv-s-input" type="text" name="as_oq">
+                    </div>
+                    <div class="t3">
+                        <div class="t3-text">Type <span class="example">OR</span> between all the words you want: <span class="example">miniature OR standard</span></div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="t1">none of these words:</div>
+                    <div class="t2">
+                        <input class="adv-s-input" type="text" name="as_eq">
+                    </div>
+                    <div class="t3">
+                        <div class="t3-text">Put a minus sign just before words that you don't want: <span class='example'>-rodent, -"Jack Russell"</span></div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="t1">
+                        numbers ranging from:
+                    </div>
+                    <div class="t2-range">
+                        <div class="t2-range-1">
+                            <input type="text" name="as_nlo">
+                        </div>
+                        <div class="t2-range-2">
+                            <span>to</span>
+                        </div>
+                        <div class="t2-range-3">
+                            <input type="text" name="as_nhi">
+                        </div>
+                    </div>
+                    <div class="t3" style="margin-left:20px;">
+                        <div class="t3-text">
+                            Put two full stops between the numbers and add a unit of measurement: <span class="example">10..35 kg, £300..£500, 2010..2011</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tr">
+                    <div class="t1">
+                    </div>
+                    <div class="t2">
+                        <input class="button_advanced_search" value="Advanced Search" type="submit">
+                    </div>
+        </form>
+    </main>
+
+</body>
+
+</html>

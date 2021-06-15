@@ -19,8 +19,15 @@ def get_entry(request, title):
 
 def search(request):
     q = request.GET.get("q")
-    return render(request, "encyclopedia/search.html", {
-        "title": "Search Results",
-        "entries": util.search(q)
-    })
+    entries = util.list_entries()
+    if q.lower() in [entry.lower() for entry in entries]:
+        return render(request, "encyclopedia/entry.html", {
+            "title": q,
+            "entry": util.get_entry(q)
+        })
+    else:
+        return render(request, "encyclopedia/search.html", {
+            "title": "Search Results",
+            "entries": util.search(q)
+        })
 

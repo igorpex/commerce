@@ -36,3 +36,26 @@ textarea {
 .sidebar h2 {
     margin-top: 5px;
 }
+
+
+.add_form {
+    width: 80%;
+}
+
+.add_title {
+    margin-top:30px;
+    margin-bottom:5px;
+    font-weight: bold;
+}
+
+.add_error {
+    color:red;
+    height:20px;
+}
+
+.add_content {
+    margin-top:10px;
+    margin-bottom:5px;
+    font-weight: bold;
+}
+

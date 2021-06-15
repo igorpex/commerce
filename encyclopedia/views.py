@@ -15,5 +15,12 @@ def get_entry(request, title):
     return render(request, "encyclopedia/entry.html", {
         "title": title,
         "entry": util.get_entry(title)
-    } )
+    })
+
+def search(request):
+    q = request.GET.get("q")
+    return render(request, "encyclopedia/search.html", {
+        "title": "Search Results",
+        "entries": util.search(q)
+    })
 

@@ -41,3 +41,14 @@ def get_entry(title):
         # return f.read().decode("utf-8")
     except FileNotFoundError:
         return None
+
+def search(q):
+    entries = list_entries()
+
+    def filter_search (entry):
+        if q.lower() in entry.lower():
+            return True
+        else:
+            return False
+
+    return filter(filter_search, entries)

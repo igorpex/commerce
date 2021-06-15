@@ -12,13 +12,13 @@
     <div class="form-group add_form">
         {% csrf_token %}
 
-        <div class="add_title">
+        <div class="add_title form-group">
             {{ form.title.label }}
             {{ form.title }}
         </div>
         <div class="add_error">{{ error }}</div>
 
-        <div class="add_content">
+        <div class="add_content form-group">
             {{ form.content.label }}
             {{ form.content }}
         </div>

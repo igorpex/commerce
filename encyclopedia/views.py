@@ -12,11 +12,17 @@ from django.http import HttpResponseRedirect
 
 class NewEntryForm(forms.Form):
     title = forms.CharField(label="Title of the page")
-    title.widget.attrs.update({'class': 'form-control .form-group'})
+    title.widget.attrs.update({'class': 'form-control'})
     
     content = forms.CharField(label="Markdown content for the page", widget=forms.Textarea)
     content.widget.attrs.update({'class': 'form-control'})
-    # form-control form-group
+
+
+class NewEditForm(forms.Form):
+    title = forms.CharField(label="Title of the page")
+    # title.widget.attrs.update({'class': 'form-control'})
+    content = forms.CharField(label="Markdown content for the page", widget=forms.Textarea)
+    # content.widget.attrs.update({'class': 'form-control'})
 
 
 def index(request):
@@ -27,7 +33,7 @@ def index(request):
 def get_entry(request, title):
     return render(request, "encyclopedia/entry.html", {
         "title": title,
-        "entry": util.get_entry(title)
+        "entry": util.get_html_entry(title)
     })
 
 def search(request):
@@ -36,7 +42,7 @@ def search(request):
     if q.lower() in [entry.lower() for entry in entries]:
         return render(request, "encyclopedia/entry.html", {
             "title": q,
-            "entry": util.get_entry(q)
+            "entry": util.get_html_entry(q)
         })
     else:
         return render(request, "encyclopedia/search.html", {
@@ -62,11 +68,47 @@ def add(request):
             else:
                 util.save_entry(title, content)
                 return HttpResponseRedirect(f'../{title}')
-                # return render(request, "encyclopedia/entry.html", {
-                #     "title": title,
-                #     "entry": util.get_entry(title)
-                #  })
-                #  redirect
-            # return render(request, "encyclopedia/add.html", {"title": "Create Encyclopedia Entry", "form": form})
+
     else:
         return render(request, "encyclopedia/add.html", {"title": "Create Encyclopedia Entry", "form": NewEntryForm})
+
+
+def edit(request):
+# checks that it is from entry page
+    if request.method == "GET":
+        entry = request.GET.get("entry") 
+        # prepare form
+        md = util.get_entry(entry)
+        return render(request, "encyclopedia/edit.html", {"title": "Edit Encyclopedia Entry", "entry": entry, "md":md})
+
+    if request.method == "POST":
+        entry = request.POST.get("entry")
+        md = request.POST.get("md")
+        util.save_entry(entry, md)
+
+        return HttpResponseRedirect(f'../{entry}')
+
+        # editForm1 = NewEditForm
+        # editForm1['title'].value = title
+        # # editForm.content.value = util.get_entry(title)
+        # # editForm['title'].value = title1
+        # editForm1['content'].value = util.get_entry(title)
+        # # return HttpResponse(editForm1['content'].value)
+        # return render(request, "encyclopedia/edit.html", {"title": "Edit Encyclopedia Entry", "form": editForm1})
+        # return HttpResponse(editForm["content"].value)
+        # return HttpResponse(editForm["title"].value)
+        
+        
+        # form = EditForm(request.POST)
+        # show form with title read-only and content 
+            
+
+    # 
+
+
+    # checks that form comes from edit page
+        # save page
+
+        # redirect to entry page
+        # 
+    # return HttpResponseRedirect(f'../{title}')

@@ -34,17 +34,26 @@ def get_entry(title):
     """
     try:
         f = default_storage.open(f"entries/{title}.md")
-        markdowner = Markdown()
-        md = f.read().decode("utf-8")
+        # markdowner = Markdown()
+        # md = f.read().decode("utf-8")
         # return md
-        return markdowner.convert(md)
-        # return f.read().decode("utf-8")
+        # return markdowner.convert(md)
+        return f.read().decode("utf-8")
     except FileNotFoundError:
         return None
 
+def get_html_entry(title):
+    md = get_entry(title)
+    if md == None:
+        return "Error reading file"
+    markdowner = Markdown()
+    return markdowner.convert(md)
+
 def search(q):
     entries = list_entries()
-
+    """
+    Provides filtered list of entries
+    """
     def filter_search (entry):
         if q.lower() in entry.lower():
             return True

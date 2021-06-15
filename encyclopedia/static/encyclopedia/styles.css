@@ -38,22 +38,22 @@ textarea {
 }
 
 
-.add_form {
+.add_form, .edit_form {
     width: 80%;
 }
 
-.add_title {
+.add_title, .edit_title {
     margin-top:30px;
     margin-bottom:5px;
     font-weight: bold;
 }
 
-.add_error {
+.add_error, .edit_error {
     color:red;
     height:20px;
 }
 
-.add_content {
+.add_content, .edit_content {
     margin-top:10px;
     margin-bottom:5px;
     font-weight: bold;

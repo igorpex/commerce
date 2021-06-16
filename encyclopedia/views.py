@@ -8,6 +8,7 @@ from django import forms
 
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+import random
 
 
 class NewEntryForm(forms.Form):
@@ -88,27 +89,11 @@ def edit(request):
 
         return HttpResponseRedirect(f'../{entry}')
 
-        # editForm1 = NewEditForm
-        # editForm1['title'].value = title
-        # # editForm.content.value = util.get_entry(title)
-        # # editForm['title'].value = title1
-        # editForm1['content'].value = util.get_entry(title)
-        # # return HttpResponse(editForm1['content'].value)
-        # return render(request, "encyclopedia/edit.html", {"title": "Edit Encyclopedia Entry", "form": editForm1})
-        # return HttpResponse(editForm["content"].value)
-        # return HttpResponse(editForm["title"].value)
-        
-        
-        # form = EditForm(request.POST)
-        # show form with title read-only and content 
-            
 
-    # 
-
-
-    # checks that form comes from edit page
-        # save page
-
-        # redirect to entry page
-        # 
-    # return HttpResponseRedirect(f'../{title}')
+def random_page(request):
+    entries = util.list_entries()
+    entry = random.sample(entries, 1)[0]
+    return HttpResponseRedirect(f'../{entry}')
+    # alternate solution:
+    # r = random.randint(1,len(entries)) - 1
+    # return HttpResponseRedirect(f'../{entries[r]}')

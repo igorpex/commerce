@@ -34,13 +34,18 @@ def get_entry(title):
     """
     try:
         f = default_storage.open(f"entries/{title}.md")
-        # markdowner = Markdown()
-        # md = f.read().decode("utf-8")
-        # return md
-        # return markdowner.convert(md)
         return f.read().decode("utf-8")
     except FileNotFoundError:
         return None
+    except UnicodeDecodeError:
+        try:
+            f = default_storage.open(f"entries/{title}.md")
+            return f.read().decode ('Windows-1251')
+        except Exception as exc:
+            return f'Text decoding error: {exc}'
+    except Exception as exc:
+        return f'Error: {exc}'
+
 
 def get_html_entry(title):
     md = get_entry(title)

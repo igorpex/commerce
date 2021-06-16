@@ -41,7 +41,7 @@ def get_entry(request, title):
     else:
         return render(request, "encyclopedia/notfound.html", {
                 "title": title,
-                "entry": "Requeted page not found"
+                "error_message": "Requested page not found"
             })
 
 def search(request):

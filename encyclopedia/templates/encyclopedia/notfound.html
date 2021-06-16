@@ -5,8 +5,9 @@
 {%endblock%}
 
 {% block body %}
-    <h1>{{ entry }}</h1>
-    <h2>But you can</h2>
+    <h1>{{ error_message }}</h1>
+    <hr>
+    <h2>But you can:</h2>
     <ul>
         <li><a href="{% url 'index' %}">view list of pages</a></li>
         <li>use search (on the top left)</li>

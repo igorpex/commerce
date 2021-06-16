@@ -32,10 +32,17 @@ def index(request):
     })
 
 def get_entry(request, title):
-    return render(request, "encyclopedia/entry.html", {
-        "title": title,
-        "entry": util.get_html_entry(title)
-    })
+    entry = util.get_html_entry(title)
+    if entry:
+        return render(request, "encyclopedia/entry.html", {
+            "title": title,
+            "entry": entry
+        })
+    else:
+        return render(request, "encyclopedia/notfound.html", {
+                "title": title,
+                "entry": "Requeted page not found"
+            })
 
 def search(request):
     q = request.GET.get("q")

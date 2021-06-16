@@ -1,0 +1,16 @@
+{% extends "encyclopedia/layout.html" %} 
+
+{% block title %}
+    {{ title }}
+{%endblock%}
+
+{% block body %}
+    <h1>{{ entry }}</h1>
+    <h2>But you can</h2>
+    <ul>
+        <li><a href="{% url 'index' %}">view list of pages</a></li>
+        <li>use search (on the top left)</li>
+        <li><a href="{% url 'random' %}">pick random page</a></li>
+        <li><a href="{% url 'add' %}">create new page</a></li
+    </ul>
+{% endblock %}

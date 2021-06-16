@@ -9,16 +9,17 @@
     <h1> Create new encyclopedia entry</h1>
     
     <form action="{% url 'add' %}" method="post">
-    <div class="form-group add_form">
+    <div class=" add_form">
+    {% comment %} form-group {% endcomment %}
         {% csrf_token %}
 
-        <div class="add_title form-group">
+        <div class="add_title">
             {{ form.title.label }}
             {{ form.title }}
         </div>
         <div class="add_error">{{ error }}</div>
 
-        <div class="add_content form-group">
+        <div class="add_content">
             {{ form.content.label }}
             {{ form.content }}
         </div>

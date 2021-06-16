@@ -50,7 +50,8 @@ def get_entry(title):
 def get_html_entry(title):
     md = get_entry(title)
     if md == None:
-        return "Error reading file"
+        # return "Requeted page not found"
+        return None
     markdowner = Markdown()
     return markdowner.convert(md)
 

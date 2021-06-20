@@ -4,11 +4,25 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .forms import CreateListingForm
+# from .forms import AddListingForm
 
+from .models import *
+
+from django.forms import ModelForm
+
+from . import utils
 
 def index(request):
-    return render(request, "auctions/index.html")
+    status = ListingStatus.objects.get(id=4)
+    # print(status)
+    lis = Listing.objects.filter(status=status)
+    # print(listings[1].title)
+    # print(listings[1].description)
+    # listings = utils.get_open_listings()
+    return render(request, "auctions/index.html", {
+                "lis": lis
+            })
 
 
 def login_view(request):
@@ -49,15 +63,26 @@ def register(request):
                 "message": "Passwords must match."
             })
 
-        # Attempt to create new user
-        try:
-            user = User.objects.create_user(username, email, password)
-            user.save()
-        except IntegrityError:
-            return render(request, "auctions/register.html", {
-                "message": "Username already taken."
-            })
+        
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+def create(request):
+    if request.method == "POST":
+        form = CreateListingForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("auctions:index"))
+        # else:
+            # return render(request, "auctions/create.html", {"form": form})
+    else:
+        return render(request, "auctions/create.html", {"form": CreateListingForm})
+
+
+
+
+def category_listings(request):
+    category_id = request.GET["category_id"]
+    utils.get_category_listings(category_id)

@@ -1,0 +1,21 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+    <ul>
+        {% lis[1].title %}
+    </ul>
+{% endblock %}
+    {% for list in listings %}
+    {% empty %}
+            <p>No Listings</p>
+    <p>{% listings[1].title %}</p>
+<p>{% listingdescription %}</p> {% endcomment %}
+            <p>{% listing.startprice %}</p>
+            <p>{% listing.status %}</p>
+            <p>{% listing.imageurl %}</p>
+            <p>{% listing.category %}</p>
+            <p>{% listing.creation_date %}</p>
+            <p>{% listing.creator %}</p> {% endcomment %}
+    {% comment %} {% endfor %}
+

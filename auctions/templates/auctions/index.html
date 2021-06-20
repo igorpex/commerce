@@ -1,7 +1,26 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
-
-    TODO
+<h2>Active listings</h2>
+    <bg-light>
+      <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+      
+          {% for li in lis %}
+          <div class="col">
+              <shadow-sm>
+                <p> Title: {{ li.title }}</p>
+                <p> Description: {{ li.description }}</p>
+                <p> Start price: {{ li.startprice }}</p>
+                <p> Bid Status{{ li.status }}</p>
+                <p> Image URL{{ li.imageurl }}</p>
+                <p> Category: {{ li.category }}</p>
+                <p> Creation Date: {{ li.creation_date }}</p>
+                <p> Created by: {{ li.creator }}</p>
+              </shadow-sm>
+            </div>
+          {% endfor %}
+      </div>
+      </div>
+    </bg-light>
 {% endblock %}

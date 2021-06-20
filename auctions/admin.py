@@ -1,16 +1,16 @@
 from django.contrib import admin
-from django.contrib.auth.models import User  #new
-from django.contrib.auth.admin import UserAdmin #new
+# from django.contrib.auth.models import User  #new
+# from django.contrib.auth.admin import UserAdmin #new
 
 # Register your models here.
 
-from .models import Listing, ListingStatus, Category, User, Watchlist
+from .models import Listing, ListingStatus, Category, Watchlist
 # from django.contrib.auth.models import User
 
 admin.site.register(Listing)
 admin.site.register(ListingStatus)
 admin.site.register(Category)
-admin.site.register(User)
+# admin.site.register(User)
 admin.site.register(Watchlist)
 
 # admin.site.register(UserAdmin)

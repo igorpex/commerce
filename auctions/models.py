@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from datetime import datetime
+from django.db.models.aggregates import Max
+from django.db.models.fields import IntegerField
 from django.utils.timezone import now
 
 from django.contrib.auth.models import User
@@ -23,6 +25,7 @@ class ListingStatus(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=64)
     description = models.CharField(max_length=300)
+    ebay_id = IntegerField()
 
     def __str__(self):
         return f"id = {self.id} {self.name}"
@@ -51,3 +54,5 @@ class Listing(models.Model):
 class Watchlist (models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     watcher = models.ForeignKey(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return f"{self.watcher.username}' watching: '{self.listing.title}'"

@@ -11,6 +11,8 @@ from .models import *
 
 from . import utils
 
+from .categories_options import categories_options
+
 def index(request):
     status = ListingStatus.objects.get(id=4)
     # print(status)
@@ -61,9 +63,16 @@ def register(request):
                 "message": "Passwords must match."
             })
 
-        
+        # Attempt to create new user
+        try:
+            user = User.objects.create_user(username, email, password)
+            user.save()
+        except IntegrityError:
+            return render(request, "auctions/register.html", {
+                "message": "Username already taken."
+            })
         login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("auctions:index"))
     else:
         return render(request, "auctions/register.html")
 
@@ -79,12 +88,9 @@ def create(request):
         return render(request, "auctions/create.html", {"form": CreateListingForm})
 
 
-
-
 def category_listings(request):
     category_id = request.GET["category_id"]
     utils.get_category_listings(category_id)
-
 
 
 
@@ -103,3 +109,13 @@ def watchlist(request):
     return render(request, "auctions/watchlist.html", {
                 "lis": lis
             })
+
+
+def import_categories(request):
+    for key in categories_options:
+        i = key
+        name = categories_options[key]
+        print(f'index: {i}, category {name}') 
+        # print(category)
+    return HttpResponseRedirect(reverse("auctions:index"))
+

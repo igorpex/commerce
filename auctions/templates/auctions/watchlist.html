@@ -7,6 +7,7 @@
     <div class="container">
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
         {% for li in lis %}
+            
         <div class="col">
           <div class="card mb-4 rounded-3 shadow-sm">
             <div class="card-header py-3">
@@ -44,6 +45,8 @@
 
           </div>
         </div>
+        {% empty %}
+            <hq>Watchlist is empty yet</h1>
         {% endfor %}
       </div>
     </div>

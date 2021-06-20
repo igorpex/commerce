@@ -35,14 +35,19 @@ class Listing(models.Model):
     status = models.ForeignKey(ListingStatus, default=4, on_delete=models.PROTECT, related_name="statuses")
     imageurl = models.URLField(blank=True)
     category = models.ForeignKey(Category, blank=True, on_delete=models.PROTECT, related_name="categories", default=1)
-    # creation_date = models.DateTimeField(default=datetime.now, blank=True)
     creation_date = models.DateTimeField(default=now, editable=False)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, default=1, on_delete=models.PROTECT, editable=False)
+    # creation_date = models.DateTimeField(default=datetime.now, blank=True)
     # creator = models.ForeignKey(User, default=User.username, editable=False, on_delete=models.PROTECT)
     # creator = models.ForeignKey(User, models.SET_NULL, blank=True, null=True)
     # creator = models.ForeignKey(User, default=User, editable=False, on_delete=models.PROTECT)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, default=1, on_delete=models.PROTECT, editable=False)
     
+    # watched_by = models.ManyToManyField("User", related_name="watched_listings")
+
     def __str__(self):
         return self.title
-    
 
+
+class Watchlist (models.Model):
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    watcher = models.ForeignKey(User, on_delete=models.CASCADE)

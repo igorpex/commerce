@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -80,7 +80,10 @@ def create(request):
     if request.method == "POST":
         form = CreateListingForm(request.POST)
         if form.is_valid():
-            form.save()
+            instance = form.save(commit=False)
+            instance.creator = request.user
+            instance.save()
+            # messages.success(request, f'Listing Adde')
             return HttpResponseRedirect(reverse("auctions:index"))
         # else:
             # return render(request, "auctions/create.html", {"form": form})
@@ -96,11 +99,9 @@ def category_listings(request):
 
 def watchlist(request):
     status = ListingStatus.objects.get(id=4)
-    # print(status)
-    # user_id = settings.AUTH_USER_MODEL.id
-    username=request.user.username
+    # username=request.user.username
     user_id = request.user.id
-    print(username)
+    # print(username)
     lis = Listing.objects.filter(status=status, watchlist__watcher=user_id)
     # Product.objects.filter(company__name="Apple")
     # print(listings[1].title)
@@ -116,6 +117,20 @@ def import_categories(request):
         i = key
         name = categories_options[key]
         print(f'index: {i}, category {name}') 
+        c = Category(name=name, ebay_id=i)
         # print(category)
     return HttpResponseRedirect(reverse("auctions:index"))
 
+
+def view_listing(request, li_id):
+    try:
+        li = Listing.objects.get(id=li_id)
+        # watch = request.GET.get("watch", "")
+        # if watch == 'add', then is_watched = true
+        props = {
+            'li':li,
+            }
+        return render(request, "auctions/listing.html", props)
+    except:
+        raise Http404
+        # return HttpResponseRedirect(reverse("auctions:index"))

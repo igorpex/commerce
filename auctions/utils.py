@@ -5,8 +5,6 @@ from django.core.files.storage import default_storage
 
 from .models import *
 
-from markdown2 import Markdown
-
 # def get_open_listings(status = 'open'):
 #     # status = (ListingStatus.objects.get(status='open')) if status None
 #     status = ListingStatus.objects.get(id=4)

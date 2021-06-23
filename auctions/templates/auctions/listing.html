@@ -1,12 +1,41 @@
 {% extends "auctions/layout.html" %}
-
+{% load static %} 
 {% block body %}
 <h2>Active listings</h2>
 <div class="main">
   <div class="album py-5 bg-light">
     <div class="container">
+
+      <div class="card mb-3" style="max-width: 900px;">
+        <div class="row g-0">
+          <div class="col-md-4">
+            {% if li.imageurl %}
+              <img src="{{li.imageurl}}" class="card-img-top">
+            {% else %}
+              <svg class="bd-placeholder-img" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" aria-label="Placeholder: Image" preserveAspectRatio="xMidYMid slice" role="img" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Изображение</text></svg>
+            {% endif %}
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{ li.title }}</h5>
+              <img src="{% static 'auctions/afb7b0b4bbec.svg' %}">
+              <img src="{% static 'auctions/c5d445485e85.svg' %}">
+              <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ li.startprice }} </h1>
+              <p class="card-text"> Description: {{ li.description }}</p>
+              <!-- <p class="card-text"> Bid Status{{ li.status }}</p> -->
+              <ul class="list-unstyled mt-3 mb-4">
+                <li>Category: {{ li.category.name }}</li>
+                <li>Created: {{ li.creation_date }} by {{ li.creator }}</li>
+              </ul>
+              <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">Edit</a>
+              {% comment %} <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> {% endcomment %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        {% for li in lis %}
         <div class="col">
           <div class="card mb-4 rounded-3 shadow-sm">
             <div class="card-header py-3">
@@ -29,23 +58,23 @@
               <ul class="list-unstyled mt-3 mb-4">
                 <li>Category: {{ li.category.name }}</li>
                 <li>Created: {{ li.creation_date }} by {{ li.creator }}</li>
+                <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">Edit</a>
+                {% comment %} <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button> {% endcomment %}
               </ul>
               <!-- <p class="card-text"> Category: {{ li.category.name }}</p>
               <p class="card-text"> Created: {{ li.creation_date }}</p>
               <p class="card-text"> Created by: {{ li.creator }}</p> -->
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">View</a>
-                  {% comment %} <button type="button" class="btn btn-sm btn-outline-primary"><a href="{% url 'auctions:view_listing' li.id %}">View</a></button> {% endcomment %}
+                  <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">Edit</a>
                   {% comment %} <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button> {% endcomment %}
                 </div>
-                <small class="text-muted">9 mins</small>
+                {% comment %} <small class="text-muted">9 mins</small> {% endcomment %}
               </div>
             </div>
 
           </div>
         </div>
-        {% endfor %}
       </div>
     </div>
   </div>

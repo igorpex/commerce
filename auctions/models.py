@@ -10,6 +10,8 @@ from django.contrib.auth.models import User
 
 from django.conf import settings
 
+from django.http import request
+
 
 class User(AbstractUser):
     pass
@@ -39,12 +41,12 @@ class Listing(models.Model):
     imageurl = models.URLField(blank=True)
     category = models.ForeignKey(Category, blank=True, on_delete=models.PROTECT, related_name="categories", default=1)
     creation_date = models.DateTimeField(default=now, editable=False)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, default=1, on_delete=models.PROTECT, editable=False)
+    creator = models.ForeignKey(User, default=None, blank=True, on_delete=models.PROTECT, editable=False)
+    # creator = models.ForeignKey(settings.AUTH_USER_MODEL, default=1, on_delete=models.PROTECT, editable=False)
     # creation_date = models.DateTimeField(default=datetime.now, blank=True)
     # creator = models.ForeignKey(User, default=User.username, editable=False, on_delete=models.PROTECT)
     # creator = models.ForeignKey(User, models.SET_NULL, blank=True, null=True)
     # creator = models.ForeignKey(User, default=User, editable=False, on_delete=models.PROTECT)
-    
     # watched_by = models.ManyToManyField("User", related_name="watched_listings")
 
     def __str__(self):

@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from datetime import datetime
+from django.db.models import deletion
 from django.db.models.aggregates import Max
 from django.db.models.deletion import CASCADE
 from django.db.models.fields import IntegerField
@@ -59,15 +60,20 @@ class Watchlist (models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     watcher = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
-        return f"{self.watcher.username}' watching: '{self.listing.title}'"
+        return f"{self.watcher.username} watching: {self.listing.title}"
 
 class Bid (models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
-    bidder = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, default=None, blank=True, on_delete=models.PROTECT, editable=True)
     price = models.FloatField()
     date = models.DateTimeField(default=now, editable=False)
+    def __str__(self):
+        return f"{self.author.username} bid: {self.listing.title}"
 
-class Comments (models.Model):
+class Comment (models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     text = models.TextField(max_length=500)
     date = models.DateTimeField(default=now, editable=False)
+    author = ForeignKey(User, default=None, blank=True, on_delete=models.PROTECT, editable=True)
+    def __str__(self):
+        return f"{self.author.username} commented: {self.listing.title}"

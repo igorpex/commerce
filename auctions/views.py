@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .forms import CreateListingForm
+# CommentListingForm, BidForm
 # from .forms import AddListingForm
 
 from .models import *
@@ -112,14 +113,14 @@ def watchlist(request):
             })
 
 
-def import_categories(request):
-    for key in categories_options:
-        i = key
-        name = categories_options[key]
-        print(f'index: {i}, category {name}') 
-        c = Category(name=name, ebay_id=i)
-        # print(category)
-    return HttpResponseRedirect(reverse("auctions:index"))
+# def import_categories(request):
+#     for key in categories_options:
+#         i = key
+#         name = categories_options[key]
+#         print(f'index: {i}, category {name}') 
+#         c = Category(name=name, ebay_id=i)
+#         # print(category)
+#     return HttpResponseRedirect(reverse("auctions:index"))
 
 
 def view_listing(request, li_id):
@@ -158,4 +159,35 @@ def view_listing(request, li_id):
     except:
         raise Http404
 
+# def comment_listing(request, li_id):
+#     if request.method == "POST":
+#         comment_form = CommentListingForm(request.POST)
+#         if comment_form.is_valid():
+#             comment = comment_form.save(commit=False)
+#             comment.author = request.user
+#             comment.save()
+#             # messages.success(request, f'Listing Adde')
+#             redirect_path=f'{reverse("auctions:view_listing")}{li_id}'
+#             return HttpResponseRedirect(redirect_path)
+#         # else:
+#             # return render(request, "auctions/create.html", {"form": form})
+#     else:
+#         li = Listing.objects.get(id=li_id)
+#         return render(request, "auctions/listing.html", {
+#             "li":li,
+#             "comment_form": CommentListingForm})
 
+# def bid_listing (request, li_id):
+#     if request.method == "POST":
+#         bid_form = BidForm(request.POST)
+#         if bid_form.is_valid():
+#             bid = bid_form.save(commit=False)
+#             bid.author = request.user
+#             bid.save()
+#             redirect_path=f'{reverse("auctions:view_listing")}{li_id}'
+#             return HttpResponseRedirect(redirect_path)
+#     else:
+#         li = Listing.objects.get(id=li_id)
+#         return render(request, "auctions/listing.html", {
+#             "li":li,
+#             "comment_form": BidForm})

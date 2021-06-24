@@ -1,16 +1,11 @@
-<span class="vi-atw-txt" href="javascript:;">Watching</span>
-<span class="vi-rmw-txt">Unwatch</span>
+{% extends "auctions/listing.html" %}
+{% load static %} 
 
-<div id="watchWrapperId" class=" ">
-					<div id="vi-atl-lnk" class="vi-atw-chk" style="">		
-		<a i="-99" n="Watch list" href="">
-			<span class="vi-atw-icn"></span>
-			<span class="vi-atw-txt" href="">Watching</span>
-			<span class="vi-rmw-txt">Unwatch</span>
-		</a>
-	</div>
-
-			<div id="vi-atl-lnk" class="" style="">
-			<span class="vi-atw-txt" href="">Add to Watchlist</span>
-
-	
+{% block button_watchlist %}
+	 	<p>Button Hello World</p>
+		<img src="{% static 'auctions/afb7b0b4bbec.svg' %}"> <a href="#">Add to Watchlist</a>
+		<img src="{% static 'auctions/c5d445485e85.svg' %}"> <a href="#">Watching</a>
+		<a href="#">Unwatch</a>
+	{% comment %} {% if user.is_authenticated %} {% endcomment %}
+	{% comment %} {% endif %} {% endcomment %}
+{% endblock button_watchlist%}

@@ -1,3 +1,22 @@
 /* body {
     padding: 10px;
 } */
+
+
+/* Watchist buttons */
+
+.watching_buttons {
+    text-decoration: none;
+}
+
+.watching_buttons .bt_unwatch {
+  display: none;
+}
+
+.watching_buttons:hover .bt_watching {
+    display: none;
+  }
+
+.watching_buttons:hover .bt_unwatch {
+  display: inline;
+}

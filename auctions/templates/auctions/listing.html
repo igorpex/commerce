@@ -1,4 +1,5 @@
 {% extends "auctions/layout.html" %}
+{% comment %} {% extends "auctions/button_watchlist.html" %} {% endcomment %}
 {% load static %} 
 {% block body %}
 <h2>Active listings</h2>
@@ -18,8 +19,21 @@
           <div class="col-md-8">
             <div class="card-body">
               <h5 class="card-title">{{ li.title }}</h5>
-              <img src="{% static 'auctions/afb7b0b4bbec.svg' %}">
-              <img src="{% static 'auctions/c5d445485e85.svg' %}">
+              
+              {% block button_watchlist %}
+                {% if user.is_authenticated %}
+                
+                    {% if is_watched %}
+                    <a class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=remove"><img src="{% static 'auctions/c5d445485e85.svg' %}">
+                        <span class="bt_watching">Watching</span>
+                        <span class="bt_unwatch">Unwatch</span>
+                    </a>
+                    {% else %}
+                        <img src="{% static 'auctions/afb7b0b4bbec.svg' %}"> <a class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=add">Add to Watchlist</a>
+                    {% endif %}
+                    {{ message|default:'' }}
+                {% endif %}
+              {% endblock button_watchlist %}
               <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ li.startprice }} </h1>
               <p class="card-text"> Description: {{ li.description }}</p>
               <!-- <p class="card-text"> Bid Status{{ li.status }}</p> -->
@@ -30,49 +44,6 @@
               <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">Edit</a>
               {% comment %} <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> {% endcomment %}
             </div>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        <div class="col">
-          <div class="card mb-4 rounded-3 shadow-sm">
-            <div class="card-header py-3">
-              <h4 class="my-0 fw-normal">{{ li.title }}</h4>
-            </div>
-            {% if li.imageurl %}
-            <img src="{{li.imageurl}}" class="card-img-top">
-            {% else %}
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
-              <title>Placeholder</title>
-              <rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">No picture</text>
-            </svg>
-            {% endif %}
-
-            <div class="card-body">
-              <!-- <p class="card-text"> Start price: </p> -->
-              <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ li.startprice }} </h1>
-              <p class="card-text"> Description: {{ li.description| truncatewords:35  }}</p>
-              <!-- <p class="card-text"> Bid Status{{ li.status }}</p> -->
-              <ul class="list-unstyled mt-3 mb-4">
-                <li>Category: {{ li.category.name }}</li>
-                <li>Created: {{ li.creation_date }} by {{ li.creator }}</li>
-                <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">Edit</a>
-                {% comment %} <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button> {% endcomment %}
-              </ul>
-              <!-- <p class="card-text"> Category: {{ li.category.name }}</p>
-              <p class="card-text"> Created: {{ li.creation_date }}</p>
-              <p class="card-text"> Created by: {{ li.creator }}</p> -->
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">Edit</a>
-                  {% comment %} <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button> {% endcomment %}
-                </div>
-                {% comment %} <small class="text-muted">9 mins</small> {% endcomment %}
-              </div>
-            </div>
-
           </div>
         </div>
       </div>

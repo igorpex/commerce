@@ -1,79 +1,53 @@
 {% extends "auctions/layout.html" %}
 {% comment %} {% extends "auctions/button_watchlist.html" %} {% endcomment %}
-{% load static %}
+{% load static %} 
 {% block body %}
 <h2>Active listings</h2>
 <div class="main">
-    <div class="album py-5 bg-light">
-        <div class="container">
-            <div class="card mb-3" style="max-width: 900px;">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        {% if li.imageurl %}
-                            <img src="{{li.imageurl}}" class="card-img-top">
-                        {% else %}
-                            <svg class="bd-placeholder-img" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" aria-label="Placeholder: Image" preserveAspectRatio="xMidYMid slice" role="img" focusable="false">
-                            <title>Placeholder</title>
-                            <rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Изображение</text>
-                            </svg>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ li.title }}</h5>
+  <div class="album py-5 bg-light">
+    <div class="container">
 
-                            {% block button_watchlist %}
-                                {% if user.is_authenticated %}
-                                    {% if is_watched %}
-                                        <a class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=remove"><img src="{% static 'auctions/c5d445485e85.svg' %}">
-                                            <span class="bt_watching">Watching</span>
-                                            <span class="bt_unwatch">Unwatch</span>
-                                        </a>
-                                    {% else %}
-                                        <img src="{% static 'auctions/afb7b0b4bbec.svg' %}"> <a class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=add">Add to Watchlist</a>
-                                    {% endif %}
-                                    {{ message|default:'' }}
-                                {% endif %}
-                            {% endblock button_watchlist %}
-                            
-                            <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ li.startprice }} </h1>
-                            <p class="card-text"> Description: {{ li.description }}</p>
-                            <!-- <p class="card-text"> Bid Status{{ li.status }}</p> -->
-                            <ul class="list-unstyled mt-3 mb-4">
-                                <li>Category: {{ li.category.name }}</li>
-                                <li>Created: {{ li.creation_date }} by {{ li.creator }}</li>
-                            </ul>
-
-                            <!-- <div class='bid-form'>
-                                <form method="post" action="{% url 'actions:listing' li.id bid %}">
-                                    {% csrf_token %}
-                                    {{ bid_form.as_p }}
-                                    <input type="submit" value="Add Bid" />
-                                </form>
-                            </div> -->
-                            <!-- <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id bid %}" role="button">Bid</a> -->
-
-                            <!-- <div class="comments-view">
-                                {% for comment in comments %}
-                                <p>{{ comment.text }}</p>
-                                <p>{{ comment.autho r}}</p>
-                                {% empty %}
-                                <p>No comments here yet. You can be first.</p>
-                                {% endfor %}
-                            </div> -->
-
-                            <!-- <div class="comments-form">
-                                <form method="post" action="{% url 'actions:listing' li.id comment %}">
-                                    {% csrf_token %} {{ comment_form.as_table }}
-                                    <input type="submit" value="Add Comment" />
-                                </form>
-                            </div> -->
-                            <!-- {% comment %} <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> {% endcomment %} -->
-                        </div>
-                    </div>
-                </div>
+      <div class="card mb-3" style="max-width: 900px;">
+        <div class="row g-0">
+          <div class="col-md-4">
+            {% if li.imageurl %}
+              <img src="{{li.imageurl}}" class="card-img-top">
+            {% else %}
+              <svg class="bd-placeholder-img" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" aria-label="Placeholder: Image" preserveAspectRatio="xMidYMid slice" role="img" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Изображение</text></svg>
+            {% endif %}
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{ li.title }}</h5>
+              
+              {% block button_watchlist %}
+                {% if user.is_authenticated %}
+                
+                    {% if is_watched %}
+                    <a class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=remove"><img src="{% static 'auctions/c5d445485e85.svg' %}">
+                        <span class="bt_watching">Watching</span>
+                        <span class="bt_unwatch">Unwatch</span>
+                    </a>
+                    {% else %}
+                        <img src="{% static 'auctions/afb7b0b4bbec.svg' %}"> <a class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=add">Add to Watchlist</a>
+                    {% endif %}
+                    {{ message|default:'' }}
+                {% endif %}
+              {% endblock button_watchlist %}
+              <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ li.startprice }} </h1>
+              <p class="card-text"> Description: {{ li.description }}</p>
+              <!-- <p class="card-text"> Bid Status{{ li.status }}</p> -->
+              <ul class="list-unstyled mt-3 mb-4">
+                <li>Category: {{ li.category.name }}</li>
+                <li>Created: {{ li.creation_date }} by {{ li.creator }}</li>
+              </ul>
+              <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">Bid</a>
+              {% comment %} <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> {% endcomment %}
             </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}

@@ -127,75 +127,35 @@ def view_listing(request, li_id):
         li = Listing.objects.get(id=li_id)
         #check authentication status
         if User.is_authenticated:
-
+            
+            # Function Watchlist
             # check current wathcing status
-            # is_watched = Watchlist.objects.filter(listing_id=li_id, watcher__username=request.user.username)
             is_watched = Watchlist.objects.filter(listing_id=li_id, watcher=request.user)  
-            # if is_watched:
-            #     message = 'is_watched'
-            # else:
-            #     message = 'not_watched'
 
             # check click on button "Add to watchlist" or "Unwatch"
-            redirect_path = f'{reverse("auctions:index")}/{li.id}/'
-
             watch = request.GET.get("watch", "")
-            
+
             # add case
             if watch == 'add':
-                if is_watched:
-                    props = {
-                        'li':li,
-                        'is_watched': is_watched, #to show "Add to watchist" or "Watched and Unwatch"
-                        'message': "Already in watchlist",
-                        }
-                    # HttpResponseRedirect(redirect_path)
-                    return render(request, "auctions/listing.html", props)
-                else:
+                if not is_watched:
                     add_watched = Watchlist(listing_id=li_id, watcher =request.user)
                     add_watched.save()
                     is_watched = add_watched
-                    props = {
-                        'li':li,
-                        'is_watched': is_watched,
-                        'message': "Added to watchlist",
-                    }
-                    # HttpResponseRedirect(redirect_path)
-                    return render(request, "auctions/listing.html", props)
-            
             # remove case
             if watch == 'remove':
                 if is_watched:
                     is_watched.delete()
-                    is_watched = False
-                    props = {
-                        'li':li,
-                        'is_watched': is_watched, #to show "Add to watchist" or "Watched and Unwatch"
-                        # 'message': "Removed from Whitelist",
-                        }
-                    # HttpResponseRedirect(redirect_path)
-                    return render(request, "auctions/listing.html", props)
+                    # is_watched = False
 
-                else:
-                    # print('Removed twice')
-                    props = {
-                    'li':li,
-                    'is_watched': is_watched, #to show "Add to watchist" or "Watched and Unwatch"
-                    # 'message': "Already removed",
-                    }
-                    return render(request, "auctions/listing.html", props)
-                    # HttpResponseRedirect(redirect_path)
-                    
         # case with no actions
         props = {
             'li':li,
             'is_watched': is_watched, #to show "Add to watchist" or "Watched and Unwatch"
+            # 'bids':bids
             # 'message': message,
             }
         return render(request, "auctions/listing.html", props)
     except:
         raise Http404
-        # return HttpResponseRedirect(reverse("auctions:index"))
-        # Watchlist block
 
 

@@ -3,7 +3,9 @@ from django.db import models
 
 from datetime import datetime
 from django.db.models.aggregates import Max
+from django.db.models.deletion import CASCADE
 from django.db.models.fields import IntegerField
+from django.db.models.fields.related import ForeignKey
 from django.utils.timezone import now
 
 from django.contrib.auth.models import User
@@ -58,3 +60,14 @@ class Watchlist (models.Model):
     watcher = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
         return f"{self.watcher.username}' watching: '{self.listing.title}'"
+
+class Bid (models.Model):
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    bidder = models.ForeignKey(User, on_delete=models.CASCADE)
+    price = models.FloatField()
+    date = models.DateTimeField(default=now, editable=False)
+
+class Comments (models.Model):
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    text = models.TextField(max_length=500)
+    date = models.DateTimeField(default=now, editable=False)

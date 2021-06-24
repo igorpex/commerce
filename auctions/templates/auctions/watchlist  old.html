@@ -7,10 +7,11 @@
     <div class="container">
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
         {% for li in lis %}
+            
         <div class="col">
           <div class="card mb-4 rounded-3 shadow-sm">
             <div class="card-header py-3">
-              <h4 class="my-0 fw-normal">{{ li.title }}</h4>
+              <h4 class="my-0 fw-normal">Title: {{ li.title }}</h4>
             </div>
             {% if li.imageurl %}
             <img src="{{li.imageurl}}" class="card-img-top">
@@ -24,7 +25,7 @@
             <div class="card-body">
               <!-- <p class="card-text"> Start price: </p> -->
               <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ li.startprice }} </h1>
-              <p class="card-text"> {{ li.description| truncatewords:35  }}</p>
+              <p class="card-text"> Description: {{ li.description }}</p>
               <!-- <p class="card-text"> Bid Status{{ li.status }}</p> -->
               <ul class="list-unstyled mt-3 mb-4">
                 <li>Category: {{ li.category.name }}</li>
@@ -35,9 +36,8 @@
               <p class="card-text"> Created by: {{ li.creator }}</p> -->
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">View</a>
-                  {% comment %} <button type="button" class="btn btn-sm btn-outline-primary"><a href="{% url 'auctions:view_listing' li.id %}">View</a></button> {% endcomment %}
-                  {% comment %} <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button> {% endcomment %}
+                  <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
                 </div>
                 <small class="text-muted">9 mins</small>
               </div>
@@ -45,6 +45,8 @@
 
           </div>
         </div>
+        {% empty %}
+            <hq>Watchlist is empty yet</h1>
         {% endfor %}
       </div>
     </div>

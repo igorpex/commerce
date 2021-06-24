@@ -127,13 +127,14 @@ def view_listing(request, li_id):
         li = Listing.objects.get(id=li_id)
         #check authentication status
         if User.is_authenticated:
+
             # check current wathcing status
             # is_watched = Watchlist.objects.filter(listing_id=li_id, watcher__username=request.user.username)
             is_watched = Watchlist.objects.filter(listing_id=li_id, watcher=request.user)  
-            if is_watched:
-                message = 'is_watched'
-            else:
-                message = 'not_watched'
+            # if is_watched:
+            #     message = 'is_watched'
+            # else:
+            #     message = 'not_watched'
 
             # check click on button "Add to watchlist" or "Unwatch"
             redirect_path = f'{reverse("auctions:index")}/{li.id}/'
@@ -170,7 +171,7 @@ def view_listing(request, li_id):
                     props = {
                         'li':li,
                         'is_watched': is_watched, #to show "Add to watchist" or "Watched and Unwatch"
-                        'message': "Removed from Whitelist",
+                        # 'message': "Removed from Whitelist",
                         }
                     # HttpResponseRedirect(redirect_path)
                     return render(request, "auctions/listing.html", props)
@@ -180,15 +181,16 @@ def view_listing(request, li_id):
                     props = {
                     'li':li,
                     'is_watched': is_watched, #to show "Add to watchist" or "Watched and Unwatch"
-                    'message': "Already removed",
+                    # 'message': "Already removed",
                     }
                     return render(request, "auctions/listing.html", props)
                     # HttpResponseRedirect(redirect_path)
+                    
         # case with no actions
         props = {
             'li':li,
             'is_watched': is_watched, #to show "Add to watchist" or "Watched and Unwatch"
-            'message': message,
+            # 'message': message,
             }
         return render(request, "auctions/listing.html", props)
     except:

@@ -4,7 +4,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Listing, ListingStatus, Category, Watchlist
+from .models import Listing, ListingStatus, Category, Watchlist, Comment, Bid
 # from django.contrib.auth.models import User
 
 admin.site.register(Listing)
@@ -12,6 +12,8 @@ admin.site.register(ListingStatus)
 admin.site.register(Category)
 # admin.site.register(User)
 admin.site.register(Watchlist)
+admin.site.register(Comment)
+admin.site.register(Bid)
 
 # admin.site.register(UserAdmin)
 

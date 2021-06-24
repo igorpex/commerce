@@ -1,13 +1,16 @@
 /* body {
     padding: 10px;
 } */
+
+
 /* Watchist buttons */
+
 .watching_buttons {
   text-decoration: none;
 }
 
 .watching_buttons .bt_unwatch {
-  display: none;
+display: none;
 }
 
 .watching_buttons:hover .bt_watching {
@@ -15,6 +18,5 @@
 }
 
 .watching_buttons:hover .bt_unwatch {
-  display: inline;
+display: inline;
 }
-/*# sourceMappingURL=styles.css.map */

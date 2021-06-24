@@ -19,10 +19,9 @@
           <div class="col-md-8">
             <div class="card-body">
               <h5 class="card-title">{{ li.title }}</h5>
-              
+{% comment %} watchlist button {% endcomment %}
               {% block button_watchlist %}
                 {% if user.is_authenticated %}
-                
                     {% if is_watched %}
                     <a class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=remove"><img src="{% static 'auctions/c5d445485e85.svg' %}">
                         <span class="bt_watching">Watching</span>
@@ -32,21 +31,101 @@
                         <img src="{% static 'auctions/afb7b0b4bbec.svg' %}"> <a class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=add">Add to Watchlist</a>
                     {% endif %}
                     {{ message|default:'' }}
-                {% endif %}
+                {% endif %} 
               {% endblock button_watchlist %}
-              <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ li.startprice }} </h1>
+
+{% comment %} Price {% endcomment %}
+              {% if price %}
+                <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ price }} </h1>
+              {% endif %}
+              <small class="text-muted fw-light">Start price: ${{ li.startprice }}</small>
               <p class="card-text"> Description: {{ li.description }}</p>
+              
               <!-- <p class="card-text"> Bid Status{{ li.status }}</p> -->
               <ul class="list-unstyled mt-3 mb-4">
                 <li>Category: {{ li.category.name }}</li>
                 <li>Created: {{ li.creation_date }} by {{ li.creator }}</li>
               </ul>
-              <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">Bid</a>
-              {% comment %} <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> {% endcomment %}
+
+{% comment %} number of bids {% endcomment %}
+              {% if bids %}
+                  <span>Number of bids:</span> <span>{{ bids|length }}</span> 
+                  {% if your_bid %}
+                      <span>Your bid is current</span>
+                  {% endif %}
+              {% else %}
+                  <span>No bids yet</span>
+              {% endif %}
+
+{% comment %} bids form {% endcomment %}
+              <div class="bid-form">
+                <form class="bid-form row g-3" method="post" action="{% url 'auctions:bid_listing' li.id  %}">
+                  {% csrf_token %} 
+                  <div class="col-auto">
+                    <label for="id_price" class="visually-hidden">{{ bid_form.price.label }}</label>
+                    {{ bid_form.price }}
+                  </div>
+                  <div class="col-auto">
+                    <button type="submit" class="btn btn-primary mb-3" name='bid' value="Bid" >Bid</button>
+                  </div>
+                </form>
+              </div>
+
             </div>
           </div>
         </div>
       </div>
+
+{% comment %} comments form {% endcomment %}
+      <div class="comments-form">
+        <form method="post" action="{% url 'auctions:comment_listing' li.id  %}">
+          {% csrf_token %} 
+          <div class='mb-3'>
+          {{ comment_form.text }}
+          </div>
+          <input class="form-control" type="submit" name='comment' value="Add Comment" />
+        </form>
+      </div>
+
+
+
+{% comment %} comments {% endcomment %}
+      {% for comment in comments %}
+        <div class="card comments">
+          <div class="card-header">
+            {{ comment.author }}
+          </div>
+          <div class="card-body">
+            <blockquote class="blockquote mb-0">
+              <p>{{ comment.text }}</p>
+              <footer class="blockquote-footer">{{ comment.author }} <cite title="Date"> On {{ comment.date }}</cite></footer>
+            </blockquote>
+          </div>
+        </div>
+      {% empty %}
+        <div class="card comments">
+            <div class="card-header">
+            </div>
+            <div class="card-body">
+              <blockquote class="blockquote mb-0">
+                <p>No comments here yet.</p>
+                <footer class="blockquote-footer"> You can be the first.<cite title="Date"></cite></footer>
+              </blockquote>
+            </div>
+          </div>
+      {% endfor %}
+
+      {% comment %} <div class="comments">
+        {% for comment in comments %}
+          <p>{{ comment.text }}</p>
+          <p>{{ comment.author }}</p>
+          <p>{{ comment.date }}</p>
+        {% empty %}
+          <p>No comments here yet. You can be first.</p>
+        {% endfor %}
+      </div> {% endcomment %}
+
+
     </div>
   </div>
 </div>

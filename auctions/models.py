@@ -33,7 +33,7 @@ class Category(models.Model):
     ebay_id = IntegerField()
 
     def __str__(self):
-        return f"id = {self.id} {self.name}"
+        return f"{self.name}"
 
 class Listing(models.Model):
     title = models.CharField(max_length=80)
@@ -71,8 +71,8 @@ class Bid (models.Model):
         return f"{self.author.username} bid: {self.listing.title}"
 
 class Comment (models.Model):
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
-    text = models.TextField(max_length=500)
+    listing = models.ForeignKey(Listing, blank=True, on_delete=models.CASCADE)
+    text = models.TextField(max_length=500, default=None)
     date = models.DateTimeField(default=now, editable=False)
     author = ForeignKey(User, default=None, blank=True, on_delete=models.PROTECT, editable=True)
     def __str__(self):

@@ -1,7 +1,11 @@
 {% extends "auctions/layout.html" %} 
 {% block body %}
-<form method="post">
-  {% csrf_token %} {{ form.as_p }}
-  <input type="submit" value="Create" />
-</form>
+<div class='container'>
+  <div class="mb-3">
+    <form class='row g-3' method="post">
+      {% csrf_token %} {{ form }}
+      <input type="submit" value="Create" />
+    </form>
+  </div>
+</div>
 {% endblock %}

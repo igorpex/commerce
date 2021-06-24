@@ -23,3 +23,14 @@ def get_category_listings(category_id):
   category = (Category.objects.get(id=category_id))
   listings = Listing.objects.get(ListingStatus='open', category=category)
   return listings
+
+def get_max_price(li_id):
+  li = Listing.objects.get(id=li_id)
+  bids = Bid.objects.filter(listing=li)
+  max_bid = bids.order_by('-price').first()
+  if max_bid:
+      if max_bid.price > li.startprice:
+          price = max_bid.price
+  else:
+      price = li.startprice
+  return price

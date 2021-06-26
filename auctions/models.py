@@ -30,7 +30,7 @@ class ListingStatus(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=64)
-    description = models.CharField(max_length=300)
+    description = models.CharField(max_length=300, blank=True)
     ebay_id = IntegerField()
 
     def __str__(self):

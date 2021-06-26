@@ -6,7 +6,8 @@
 <div class="main">
   <div class="album py-5 bg-light">
     <div class="container">
-
+    
+{% comment %} image {% endcomment %}
       <div class="card mb-3" style="max-width: 900px;">
         <div class="row g-0">
           <div class="col-md-4">
@@ -19,6 +20,7 @@
           <div class="col-md-8">
             <div class="card-body">
               <h5 class="card-title">{{ li.title }}</h5>
+
 {% comment %} watchlist button {% endcomment %}
               {% block button_watchlist %}
                 {% if user.is_authenticated %}
@@ -48,14 +50,26 @@
               </ul>
 
 {% comment %} number of bids {% endcomment %}
-
-              {% if bids %}
-                  <span>Number of bids: </span> <span>{{ bids|length }}</span>
-                  {% if your_bid_is_current %}
-                      <span>Your bid is current</span>
+              {% if li.status.status == "open" %}
+                  {% if bids %}
+                      <span>Number of bids: </span> <span>{{ bids|length }}</span>
+                      {% if your_bid_is_current %}
+                          <span>Your bid is current</span>
+                      {% endif %}
+                  {% else %}
+                      <span>No bids yet</span>
                   {% endif %}
-              {% else %}
-                  <span>No bids yet</span>
+              {% elif li.status.status == "closed" %}
+                  {% if bids %}
+                      <span>Number of bids: </span> <span>{{ bids|length }}</span>
+                      {% if your_bid_is_current %}
+                          <h3><span>You are the winner!</span></h3>
+                      {% else %}
+                          <h3><span>The winner is: {{ winner }}</span></h3>
+                      {% endif %}
+                  {% else %}
+                      <span>Auction is closed, no bids.</span>
+                  {% endif %}
               {% endif %}
 
 {% comment %} bids form {% endcomment %}
@@ -73,8 +87,14 @@
                       </div>
                     </form>
                   </div>
-                {% else %}
-                    <p>Listing authors can't bid</p>
+                {% comment %} {% else %}
+                  <div class="close-auction-form">
+                    <form class="close-auction-form row g-3">
+                      <div class="col-auto">
+                        <button type="button" class="btn btn-secondary mb-3" name='close_auction' value="True" >Auction Closed</button>
+                      </div>
+                    </form>
+                  </div> {% endcomment %}
                 {% endif %}
               {% else %}
                 <p><a class="link" href="{% url 'auctions:login' %}">Log in</a> to bid</p>
@@ -128,17 +148,6 @@
             </div>
           </div>
       {% endfor %}
-
-      {% comment %} <div class="comments">
-        {% for comment in comments %}
-          <p>{{ comment.text }}</p>
-          <p>{{ comment.author }}</p>
-          <p>{{ comment.date }}</p>
-        {% empty %}
-          <p>No comments here yet. You can be first.</p>
-        {% endfor %}
-      </div> {% endcomment %}
-
 
     </div>
   </div>

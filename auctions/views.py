@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
-from django.db import IntegrityError
+from django.db import IntegrityError, close_old_connections
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
@@ -122,7 +122,7 @@ def view_listing(request, li_id):
     """checks if user can bid"""
     author = li.creator
     if request.user.is_authenticated:
-        if request.user == author:
+        if request.user == author or li.status.status == 'closed':
             can_bid = False
         else:
             can_bid = True
@@ -130,7 +130,18 @@ def view_listing(request, li_id):
         can_bid = False
     
     """checks if user is listing author and so can close the bid"""
+    if request.user == li.creator:
+        can_close = True
+    else:
+        can_close = False
+
+    """checks the winner"""
     
+    if li.status.status == "closed":
+        winner = utils.get_winner (li_id)
+    else:
+        winner = "No winner"
+
 
     """Props and render """
     props = {
@@ -143,6 +154,8 @@ def view_listing(request, li_id):
         "current_price": current_price,
         "your_bid_is_current": your_bid_is_current,
         "can_bid": can_bid,
+        "can_close": can_close,
+        "winner": winner,
         # "is_author": is_author,
         # form = UserProfileEdit(instance=request.user)
         # 'message': message,
@@ -204,6 +217,22 @@ def bid_listing (request, li_id):
         redirect_path=reverse("/", args=(li_id, ),)
         return HttpResponseRedirect(redirect_path)
 
+"""Close Auction"""
+def close_auction (request, li_id):
+    if request.method == "POST":
+        close_auction = request.POST['close_auction']
+        if close_auction:
+            """Update listing status"""
+            li = Listing.objects.get(id=li_id)
+            status = ListingStatus.objects.get(status="closed")
+            li.status = status
+            li.save()
+
+            """redirect to listing page"""
+            redirect_path=reverse("auctions:view_listing", args=(li_id, ))
+            return HttpResponseRedirect(redirect_path)
+
+            # li.winner = 
 
 """Create new listing"""
 def create(request):

@@ -34,3 +34,38 @@ def get_max_price(li_id):
   else:
       price = li.startprice
   return price
+
+def get_current_price(li_id):
+  li = Listing.objects.get(id=li_id)
+  bids = Bid.objects.filter(listing=li)
+  max_bid = bids.order_by('-price').first()
+
+  if max_bid: #if filter provided results
+      if max_bid.price > li.startprice: #doublecheck
+          current_price = max_bid.price
+  else:
+      current_price = li.startprice
+  return current_price
+
+
+def get_your_bid_is_current(li_id, user):
+  li = Listing.objects.get(id=li_id)
+  bids = Bid.objects.filter(listing=li)
+  max_bid = bids.order_by('-price').first()
+  if max_bid:
+      if max_bid.author == user:
+              return True
+      else:
+          return False
+  else:
+      return False
+  return False
+
+
+def copy_price():
+    from .models import Listing
+    lis = Listing.objects.all()
+    for li in lis:
+        li.current_price = li.startprice
+        li.save()
+        print(f'updated: {li.title}')

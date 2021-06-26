@@ -21,8 +21,6 @@ class CreateListingForm(ModelForm):
         # 'description': forms.Textarea(attrs={'class': 'form-control', 'cols': 80, 'rows': 20}),
         # }
 
-    
-
 class CommentListingForm(ModelForm):
     class Meta:
         model = Comment

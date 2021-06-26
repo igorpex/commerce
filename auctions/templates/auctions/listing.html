@@ -35,11 +35,11 @@
               {% endblock button_watchlist %}
 
 {% comment %} Price {% endcomment %}
-              {% if price %}
-                <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ price }} </h1>
+              {% if current_price %}
+                <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ current_price }} </h1>
               {% endif %}
               <small class="text-muted fw-light">Start price: ${{ li.startprice }}</small>
-              <p class="card-text"> Description: {{ li.description }}</p>
+              <p class="card-text">{{ li.description }}</p>
               
               <!-- <p class="card-text"> Bid Status{{ li.status }}</p> -->
               <ul class="list-unstyled mt-3 mb-4">
@@ -48,9 +48,10 @@
               </ul>
 
 {% comment %} number of bids {% endcomment %}
+
               {% if bids %}
-                  <span>Number of bids:</span> <span>{{ bids|length }}</span> 
-                  {% if your_bid %}
+                  <span>Number of bids: </span> <span>{{ bids|length }}</span>
+                  {% if your_bid_is_current %}
                       <span>Your bid is current</span>
                   {% endif %}
               {% else %}
@@ -58,36 +59,49 @@
               {% endif %}
 
 {% comment %} bids form {% endcomment %}
-              <div class="bid-form">
-                <form class="bid-form row g-3" method="post" action="{% url 'auctions:bid_listing' li.id  %}">
-                  {% csrf_token %} 
-                  <div class="col-auto">
-                    <label for="id_price" class="visually-hidden">{{ bid_form.price.label }}</label>
-                    {{ bid_form.price }}
+              {% if user.is_authenticated %}
+                {% if can_bid %}
+                  <div class="bid-form">
+                    <form class="bid-form row g-3" method="post" action="{% url 'auctions:bid_listing' li.id  %}">
+                      {% csrf_token %} 
+                      <div class="col-auto">
+                        <label for="id_price" class="visually-hidden">{{ bid_form.price.label }}</label>
+                        {{ bid_form.price }}
+                      </div>
+                      <div class="col-auto">
+                        <button type="submit" class="btn btn-primary mb-3" name='bid' value="Bid" >Bid</button>
+                      </div>
+                    </form>
                   </div>
-                  <div class="col-auto">
-                    <button type="submit" class="btn btn-primary mb-3" name='bid' value="Bid" >Bid</button>
-                  </div>
-                </form>
-              </div>
-
+                {% else %}
+                    <p>Listing authors can't bid</p>
+                {% endif %}
+              {% else %}
+                <p><a class="link" href="{% url 'auctions:login' %}">Log in</a> to bid</p>
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
 
 {% comment %} comments form {% endcomment %}
-      <div class="comments-form">
-        <form method="post" action="{% url 'auctions:comment_listing' li.id  %}">
-          {% csrf_token %} 
-          <div class='mb-3'>
-          {{ comment_form.text }}
-          </div>
-          <input class="form-control" type="submit" name='comment' value="Add Comment" />
-        </form>
-      </div>
-
-
+      {% if user.is_authenticated %}
+            <div class="comments-form">
+              <form method="post" action="{% url 'auctions:comment_listing' li.id  %}">
+                {% csrf_token %} 
+                <div class='mb-3'>
+                {{ comment_form.text }}
+                </div>
+                <input class="form-control" type="submit" name='comment' value="Add Comment" />
+              </form>
+            </div>
+      {% else %}
+            <div class="comments-form">
+                <div class='mb-3'>
+                <p><a class="link" href="{% url 'auctions:login' %}">Log in</a> to comment</p>
+                </div>
+            </div>
+      {% endif %}
 
 {% comment %} comments {% endcomment %}
       {% for comment in comments %}

@@ -10,17 +10,6 @@ from .forms import CreateListingForm, CommentListingForm, BidForm
 from .models import Comment, Bid, Category, Watchlist, ListingStatus, Listing, User
 from . import utils
 
-def index(request):
-    # status = ListingStatus.objects.get(id=4)
-    status = ListingStatus.objects.get(status='open')
-    # print(status)
-    lis = Listing.objects.filter(status=status)
-    # print(listings[1].title)
-    # print(listings[1].description)
-    # listings = utils.get_open_listings()
-    return render(request, "auctions/index.html", {
-                "lis": lis
-            })
 
 
 def login_view(request):
@@ -74,52 +63,37 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-def create(request):
-    if request.method == "POST":
-        form = CreateListingForm(request.POST)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.creator = request.user
-            instance.save()
-            # messages.success(request, f'Listing Adde')
-            return HttpResponseRedirect(reverse("auctions:index"))
-        # else:
-            # return render(request, "auctions/create.html", {"form": form})
-    else:
-        return render(request, "auctions/create.html", {"form": CreateListingForm})
-
-
-def category_listings(request):
-    category_id = request.GET["category_id"]
-    utils.get_category_listings(category_id)
-
-
-def watchlist(request):
-    status = ListingStatus.objects.get(id=4)
-    # username=request.user.username
-    user_id = request.user.id
-    # print(username)
-    lis = Listing.objects.filter(status=status, watchlist__watcher=user_id)
-    # Product.objects.filter(company__name="Apple")
+"""Index page - view all open listings"""
+def index(request):
+    # status = ListingStatus.objects.get(id=4)
+    status = ListingStatus.objects.get(status='open')
+    # print(status)
+    lis = Listing.objects.filter(status=status)
     # print(listings[1].title)
     # print(listings[1].description)
     # listings = utils.get_open_listings()
-    return render(request, "auctions/watchlist.html", {
+    return render(request, "auctions/index.html", {
                 "lis": lis
             })
 
 
+"""View Listing Item"""
 def view_listing(request, li_id):
+
+    """defaul view with no actions"""
+
+    """Get listing item by ID"""
     li = Listing.objects.get(id=li_id)
+
+    """Get Watchlist button status"""
     #check authentication status
-    if User.is_authenticated:
+    if request.user.is_authenticated:
+        is_watched = Watchlist.objects.filter(listing_id=li_id, watcher=request.user)   
+    else:
+        is_watched = False
 
-    # Function Watchlist
-
-        # get current wathcing status
-        is_watched = Watchlist.objects.filter(listing_id=li_id, watcher=request.user)
-        
-        # change watchlisted status if button clicked
+    """ Process Watching change requests (add to watchlist, unwatch) """
+    if request.user.is_authenticated:
         watch = request.GET.get("watch", "")
         # adding to watchlist
         if watch == 'add':
@@ -131,25 +105,34 @@ def view_listing(request, li_id):
         if watch == 'remove':
             if is_watched:
                 is_watched.delete()
-
-    # defaul view with no actions
     
+    """Get Comments list"""
     comments = Comment.objects.filter(listing=li)
-    # price = utils.get_max_price(li_id)
-    bids = Bid.objects.filter(listing=li)
-    max_bid = bids.order_by('-price').first()
-    if max_bid:
-        if max_bid.price > li.startprice:
-            price = max_bid.price
-            if max_bid.author == request.user:
-                your_bid = True
-            else:
-                your_bid = False
-    else:
-        price = li.startprice
-        your_bid = False
-        
 
+    """Get bids for listing"""
+    bids = Bid.objects.filter(listing=li)
+
+    """Current price based on max bid and li.startprice"""
+    current_price = utils.get_current_price(li_id)
+
+    """Checks if your bid is current based on bid and request.user"""
+    user = request.user
+    your_bid_is_current = utils.get_your_bid_is_current(li_id, user)
+
+    """checks if user can bid"""
+    author = li.creator
+    if request.user.is_authenticated:
+        if request.user == author:
+            can_bid = False
+        else:
+            can_bid = True
+    else:
+        can_bid = False
+    
+    """checks if user is listing author and so can close the bid"""
+    
+
+    """Props and render """
     props = {
         'li':li,
         'is_watched': is_watched,
@@ -157,16 +140,17 @@ def view_listing(request, li_id):
         "comment_form": CommentListingForm(instance=li),
         "bid_form": BidForm,
         "bids": bids,
-        "price": price,
-        "your_bid": your_bid,
+        "current_price": current_price,
+        "your_bid_is_current": your_bid_is_current,
+        "can_bid": can_bid,
+        # "is_author": is_author,
         # form = UserProfileEdit(instance=request.user)
-        # 'bids':bids
         # 'message': message,
         }
     return render(request, "auctions/listing.html", props)
 
 
-# Function to process Comments POST requests
+"""POST Comment"""
 def comment_listing(request, li_id):
     if request.method == "POST":
         comment_form = CommentListingForm(request.POST)
@@ -182,26 +166,36 @@ def comment_listing(request, li_id):
         redirect_path=reverse("auctions:view_listing", args=(li_id,))
         return HttpResponseRedirect(redirect_path)
 
-# Function to process Bid POST requests
+"""POST Bid"""
 def bid_listing (request, li_id):
     if request.method == "POST":
         bid_form = BidForm(request.POST)
         if bid_form.is_valid():
-            # if bid_form['price'] < price:
-            # print(type(bid_form['price']))
-            # original = bid_form._meta.model.objects.get(pk=bid_form.instance.pk)
-            # print(original.price)
+            """check maximum"""
             form_price = bid_form.cleaned_data['price']
-            # form.cleaned_data['my_field']
-            # check maximum
-            price = utils.get_max_price(li_id)
-            if form_price <= price:
-                redirect_path=reverse("auctions:view_listing", args=(li_id,))
+            current_price = utils.get_current_price(li_id)
+            if form_price <= current_price:
+                bid_error_message = 'bid_small'
+                redirect_path=reverse("auctions:view_listing", args=(li_id, bid_error_message, ))
                 return HttpResponseRedirect(redirect_path)
             bid = bid_form.save(commit=False)
+
+            """ add required parameters to bid"""
             bid.author = request.user
             bid.listing_id = li_id
-            bid.save()
+
+            """saving to bids and Listing.current_price"""
+            try:
+                bid.save()
+            except Exception as e: 
+                print('Error on bid save:', e)
+                # bid_error_message = 'bid_save_error'
+                redirect_path=reverse("auctions:view_listing", args=(li_id, ))
+                return HttpResponseRedirect(redirect_path)
+
+            # else:
+            #     Listing.objects.filter(id=li_id).update(current_price = form_price)
+            
             redirect_path=reverse("auctions:view_listing", args=(li_id,))
             return HttpResponseRedirect(redirect_path)
     else:
@@ -209,6 +203,42 @@ def bid_listing (request, li_id):
         
         redirect_path=reverse("/", args=(li_id, ),)
         return HttpResponseRedirect(redirect_path)
+
+
+"""Create new listing"""
+def create(request):
+    if request.method == "POST":
+        form = CreateListingForm(request.POST)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.creator = request.user
+            instance.save()
+            # messages.success(request, f'Listing Adde')
+            return HttpResponseRedirect(reverse("auctions:index"))
+        # else:
+            # return render(request, "auctions/create.html", {"form": form})
+    else:
+        return render(request, "auctions/create.html", {"form": CreateListingForm})
+
+"""View Listings of exact category"""
+def category_listings(request):
+    category_id = request.GET["category_id"]
+    utils.get_category_listings(category_id)
+
+"""View users Watchlist Item"""
+def watchlist(request):
+    status = ListingStatus.objects.get(id=4)
+    # username=request.user.username
+    user_id = request.user.id
+    # print(username)
+    lis = Listing.objects.filter(status=status, watchlist__watcher=user_id)
+    # Product.objects.filter(company__name="Apple")
+    # print(listings[1].title)
+    # print(listings[1].description)
+    # listings = utils.get_open_listings()
+    return render(request, "auctions/watchlist.html", {
+                "lis": lis
+            })
 
 
 

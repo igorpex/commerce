@@ -32,7 +32,6 @@
                     {% else %}
                         <img src="{% static 'auctions/afb7b0b4bbec.svg' %}"> <a class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=add">Add to Watchlist</a>
                     {% endif %}
-                    {{ message|default:'' }}
                 {% endif %} 
               {% endblock button_watchlist %}
 
@@ -73,8 +72,15 @@
               {% endif %}
 
 {% comment %} bids form {% endcomment %}
+
               {% if user.is_authenticated %}
-                {% if can_bid %}
+                {% if can_bid and li.status.status == "open" %}
+                  {% comment %} {% for message in messages %}
+                    <div class="message {{ message.tags }}">
+                      {{ message }}
+                    </div> {% endcomment %}
+                  {% comment %} {% endfor %} {% endcomment %}
+                  {{ bid_message|default:'' }}
                   <div class="bid-form">
                     <form class="bid-form row g-3" method="post" action="{% url 'auctions:bid_listing' li.id  %}">
                       {% csrf_token %} 
@@ -87,14 +93,15 @@
                       </div>
                     </form>
                   </div>
-                {% comment %} {% else %}
+                {% elif can_close and li.status.status == "open" %}
                   <div class="close-auction-form">
-                    <form class="close-auction-form row g-3">
+                    <form class="close-auction-form row g-3" method="post" action="{% url 'auctions:close_auction' li.id  %}">
+                    {% csrf_token %} 
                       <div class="col-auto">
-                        <button type="button" class="btn btn-secondary mb-3" name='close_auction' value="True" >Auction Closed</button>
+                        <button type="submit" class="btn btn-primary mb-3" name='close_auction' value="True" >Close Auction</button>
                       </div>
                     </form>
-                  </div> {% endcomment %}
+                  </div>
                 {% endif %}
               {% else %}
                 <p><a class="link" href="{% url 'auctions:login' %}">Log in</a> to bid</p>

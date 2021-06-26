@@ -9,6 +9,7 @@ from .forms import CreateListingForm, CommentListingForm, BidForm
 
 from .models import Comment, Bid, Category, Watchlist, ListingStatus, Listing, User
 from . import utils
+from django.contrib import messages
 
 
 
@@ -130,10 +131,12 @@ def view_listing(request, li_id):
         can_bid = False
     
     """checks if user is listing author and so can close the bid"""
-    if request.user == li.creator:
-        can_close = True
-    else:
-        can_close = False
+    author = li.creator
+    if request.user.is_authenticated:
+        if request.user == author:
+            can_close = True
+        else:
+            can_close = False
 
     """checks the winner"""
     
@@ -156,10 +159,15 @@ def view_listing(request, li_id):
         "can_bid": can_bid,
         "can_close": can_close,
         "winner": winner,
+        
         # "is_author": is_author,
         # form = UserProfileEdit(instance=request.user)
         # 'message': message,
         }
+    
+    def get_props():
+        return props
+
     return render(request, "auctions/listing.html", props)
 
 
@@ -187,10 +195,12 @@ def bid_listing (request, li_id):
             """check maximum"""
             form_price = bid_form.cleaned_data['price']
             current_price = utils.get_current_price(li_id)
+
             if form_price <= current_price:
-                bid_error_message = 'bid_small'
-                redirect_path=reverse("auctions:view_listing", args=(li_id, bid_error_message, ))
+                # bid_message = 'bid is to small'
+                redirect_path=reverse("auctions:view_listing", args=(li_id, ))
                 return HttpResponseRedirect(redirect_path)
+
             bid = bid_form.save(commit=False)
 
             """ add required parameters to bid"""
@@ -198,13 +208,13 @@ def bid_listing (request, li_id):
             bid.listing_id = li_id
 
             """saving to bids and Listing.current_price"""
-            try:
-                bid.save()
-            except Exception as e: 
-                print('Error on bid save:', e)
+            # try:
+            bid.save()
+            # except Exception as e: 
+            #     print('Error on bid save:', e)
                 # bid_error_message = 'bid_save_error'
-                redirect_path=reverse("auctions:view_listing", args=(li_id, ))
-                return HttpResponseRedirect(redirect_path)
+            redirect_path=reverse("auctions:view_listing", args=(li_id, ))
+            return HttpResponseRedirect(redirect_path)
 
             # else:
             #     Listing.objects.filter(id=li_id).update(current_price = form_price)

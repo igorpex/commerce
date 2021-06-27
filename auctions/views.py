@@ -80,6 +80,29 @@ def index(request):
 
 """View Listing Item"""
 def view_listing(request, li_id):
+    """default props"""
+    
+    bid_message = None
+
+    """POST BID"""
+    if request.method == "POST" and ('bid' in request.POST):
+        bid_form = BidForm(request.POST)
+        if bid_form.is_valid():
+            """check maximum"""
+            form_price = bid_form.cleaned_data['price']
+            current_price = utils.get_current_price(li_id)
+
+            if form_price <= current_price:
+                bid_message = 'bid must be more than current price'
+            else: 
+                bid = bid_form.save(commit=False)
+
+                """ add required parameters to bid"""
+                bid.author = request.user
+                bid.listing_id = li_id
+
+                """saving to bids and Listing.current_price"""
+                bid.save()
 
     """defaul view with no actions"""
 
@@ -145,7 +168,7 @@ def view_listing(request, li_id):
     else:
         winner = "No winner"
 
-
+    
     """Props and render """
     props = {
         'li':li,
@@ -159,14 +182,12 @@ def view_listing(request, li_id):
         "can_bid": can_bid,
         "can_close": can_close,
         "winner": winner,
+        "bid_message": bid_message,
         
         # "is_author": is_author,
         # form = UserProfileEdit(instance=request.user)
         # 'message': message,
         }
-    
-    def get_props():
-        return props
 
     return render(request, "auctions/listing.html", props)
 

@@ -11,49 +11,91 @@
       <div class="card mb-3" style="max-width: 900px;">
         <div class="row g-0">
           <div class="col-md-4">
-            {% if li.imageurl %}
-              <img src="{{li.imageurl}}" class="card-img-top">
-            {% else %}
-              <svg class="bd-placeholder-img" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" aria-label="Placeholder: Image" preserveAspectRatio="xMidYMid slice" role="img" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Изображение</text></svg>
-            {% endif %}
+            <div class="card-body">
+              <h4 class="card-title">{{ li.title }}</h4>
+                {% if li.imageurl %}
+                  <img src="{{li.imageurl}}" class="card-img-top">
+                {% else %}
+                  <svg class="bd-placeholder-img" width="100%" height="250" xmlns="http://www.w3.org/2000/svg" aria-label="Placeholder: Image" preserveAspectRatio="xMidYMid slice" role="img" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Изображение</text></svg>
+                {% endif %}
+            </div>
           </div>
+
           <div class="col-md-8">
             <div class="card-body">
-              <h5 class="card-title">{{ li.title }}</h5>
+            <div>
+{% comment %} Price {% endcomment %}
+            <div style="dislay:inline-block; float: left">
+              {% if current_price %}
+                <h3 style="display:inline" class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ current_price }} </h3>
+              {% endif %}
+            </div style="dislay:inline-block;">
 
+              <div style="dislay:inline-block; float: right" class="watch-button">
 {% comment %} watchlist button {% endcomment %}
-              {% block button_watchlist %}
                 {% if user.is_authenticated %}
                     {% if is_watched %}
-                    <a class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=remove"><img src="{% static 'auctions/c5d445485e85.svg' %}">
-                        <span class="bt_watching">Watching</span>
-                        <span class="bt_unwatch">Unwatch</span>
-                    </a>
+                      <img src="{% static 'auctions/c5d445485e85.svg' %}">
+                        <a style="text-align:right" class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=remove">
+                            <span style="text-align:right" class="bt_watching">Watching</span>
+                            <span style="text-align:right" class="bt_unwatch">Unwatch</span>
+                        </a>
                     {% else %}
-                        <img src="{% static 'auctions/afb7b0b4bbec.svg' %}"> <a class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=add">Add to Watchlist</a>
+                        <img src="{% static 'auctions/afb7b0b4bbec.svg' %}">
+                        <a class='watching_buttons' href="{% url 'auctions:view_listing' li.id %}?watch=add">Add to Watchlist</a>
                     {% endif %}
                 {% endif %} 
-              {% endblock button_watchlist %}
+                </div>
+            </div>
 
-{% comment %} Price {% endcomment %}
-              {% if current_price %}
-                <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ current_price }} </h1>
+
+{% comment %} bids form {% endcomment %}
+              {% if user.is_authenticated %}
+                {% if can_bid and li.status.status == "open" %}
+                  <p style="clear:both; color: red">{{ bid_message|default:'' }}</p>
+                  <div style="clear:both" class="bid-form">
+                    <form class="bid-form row g-3" method="post" action="{% url 'auctions:view_listing' li.id  %}">
+                      {% csrf_token %} 
+                      <div class="col-auto">
+                        <label for="id_price" class="visually-hidden">{{ bid_form.price.label }}</label>
+                        {{ bid_form.price }}
+                      </div>
+                      <div class="col-auto">
+                        <button type="submit" class="btn btn-primary mb-3" name='bid' value="Bid" >Bid</button>
+                      </div>
+                    </form>
+                  </div>
+                {% elif can_close and li.status.status == "open" %}
+                  <div style="clear:both" class="close-auction-form">
+                    <form class="close-auction-form row g-3" method="post" action="{% url 'auctions:close_auction' li.id  %}">
+                    {% csrf_token %} 
+                      <div class="col-auto">
+                        <button type="submit" class="btn btn-primary mb-3" name='close_auction' value="True" >Close Auction</button>
+                      </div>
+                    </form>
+                  </div>
+                {% endif %}
+              {% else %}
+                <p><a class="link" href="{% url 'auctions:login' %}">Log in</a> to bid</p>
               {% endif %}
-              <small class="text-muted fw-light">Start price: ${{ li.startprice }}</small>
-              <p class="card-text">{{ li.description }}</p>
+
+              {% comment %} <small class="text-muted fw-light">Start price: ${{ li.startprice }}</small> {% endcomment %}
+              <div> <p style="clear:both" class="card-text">{{ li.description }}</p> </div>
               
               <!-- <p class="card-text"> Bid Status{{ li.status }}</p> -->
               <ul class="list-unstyled mt-3 mb-4">
-                <li>Category: {{ li.category.name }}</li>
-                <li>Created: {{ li.creation_date }} by {{ li.creator }}</li>
+                <li><small class="text-muted fw-light">Category: {{ li.category.name }}</small></li>
+                <li><small class="text-muted fw-light">Created: {{ li.creation_date }} by {{ li.creator }}</small></li>
+                {% comment %} <li>Category: {{ li.category.name }}</li> {% endcomment %}
+                {% comment %} <li>Created: {{ li.creation_date }} by {{ li.creator }}</li> {% endcomment %}
               </ul>
 
 {% comment %} number of bids {% endcomment %}
               {% if li.status.status == "open" %}
                   {% if bids %}
-                      <span>Number of bids: </span> <span>{{ bids|length }}</span>
+                      <span>Number of bids: </span> <span>{{ bids|length }}. </span>
                       {% if your_bid_is_current %}
-                          <span>Your bid is current</span>
+                          <span>Your bid is current.</span>
                       {% endif %}
                   {% else %}
                       <span>No bids yet</span>
@@ -72,17 +114,11 @@
               {% endif %}
 
 {% comment %} bids form {% endcomment %}
-
-              {% if user.is_authenticated %}
+              {% comment %} {% if user.is_authenticated %}
                 {% if can_bid and li.status.status == "open" %}
-                  {% comment %} {% for message in messages %}
-                    <div class="message {{ message.tags }}">
-                      {{ message }}
-                    </div> {% endcomment %}
-                  {% comment %} {% endfor %} {% endcomment %}
-                  {{ bid_message|default:'' }}
+                  <p><strong>{{ bid_message|default:'' }}</strong></p>
                   <div class="bid-form">
-                    <form class="bid-form row g-3" method="post" action="{% url 'auctions:bid_listing' li.id  %}">
+                    <form class="bid-form row g-3" method="post" action="{% url 'auctions:view_listing' li.id  %}">
                       {% csrf_token %} 
                       <div class="col-auto">
                         <label for="id_price" class="visually-hidden">{{ bid_form.price.label }}</label>
@@ -105,7 +141,7 @@
                 {% endif %}
               {% else %}
                 <p><a class="link" href="{% url 'auctions:login' %}">Log in</a> to bid</p>
-              {% endif %}
+              {% endif %} {% endcomment %}
             </div>
           </div>
         </div>

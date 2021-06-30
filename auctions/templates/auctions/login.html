@@ -15,10 +15,13 @@
             <form action="{% url 'auctions:login' %}" method="post">
                 {% csrf_token %}
                 <div class="form-floating">
-                    <input autofocus class="form-control" type="text" name="username" placeholder="Username">
+                    <input autofocus class="form-control" id="floatingUsername" type="text" name="username" placeholder="Username">
+                    <label for="floatingUsername">Username</label>
                 </div>
                 <div class="form-floating">
-                    <input class="form-control" type="password" name="password" placeholder="Password">
+                    <input class="form-control" id="floatingPassword" type="password" name="password" placeholder="Password">
+                    <label for="floatingPassword">Password</label>
+
                 </div>
                 {% if next %}
                     <input type="hidden" name="next" value="{{ next }}" />

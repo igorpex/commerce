@@ -1,17 +1,21 @@
 {% extends "auctions/layout.html" %}
-{% comment %} {% extends "auctions/button_watchlist.html" %} {% endcomment %}
-{% load static %} 
-{% block body %}
-<h2>Active listings</h2>
-<div class="main">
-  <div class="album py-5 bg-light">
-    <div class="container">
 
+{% block title %}
+  My Auctions - Listings I bid
+{% endblock %}
+
+{% block body %}
+<h2 class="fw-normal text-center">Listings I bid</h2>
+<div class="main">
+  <div class="album py-2 bg-light">
+    <div class="container">
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        {% for li in lis %}
         <div class="col">
           <div class="card mb-4 rounded-3 shadow-sm">
             <div class="card-header py-3">
               <h4 class="my-0 fw-normal">{{ li.title }}</h4>
+              <p class="my-status badge {{ li.my_status }}" >{{ li.my_status }} </p>
             </div>
             {% if li.imageurl %}
             <img src="{{li.imageurl}}" class="card-img-top">
@@ -23,30 +27,23 @@
             {% endif %}
 
             <div class="card-body">
-              <!-- <p class="card-text"> Start price: </p> -->
-              <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ li.startprice }} </h1>
-              <p class="card-text"> Description: {{ li.description| truncatewords:35  }}</p>
-              <!-- <p class="card-text"> Bid Status{{ li.status }}</p> -->
+              <h1 class="card-title pricing-card-title"> <small class="text-muted fw-light">$</small>{{ li.current_price }} </h1>
+              <p class="card-text"> {{ li.description| truncatewords:35  }}</p>
               <ul class="list-unstyled mt-3 mb-4">
                 <li>Category: {{ li.category.name }}</li>
                 <li>Created: {{ li.creation_date }} by {{ li.creator }}</li>
-                <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">Edit</a>
-                {% comment %} <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button> {% endcomment %}
               </ul>
-              <!-- <p class="card-text"> Category: {{ li.category.name }}</p>
-              <p class="card-text"> Created: {{ li.creation_date }}</p>
-              <p class="card-text"> Created by: {{ li.creator }}</p> -->
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">Edit</a>
-                  {% comment %} <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button> {% endcomment %}
+                  <a class="btn btn-primary" href="{% url 'auctions:view_listing' li.id %}" role="button">View</a>
                 </div>
-                {% comment %} <small class="text-muted">9 mins</small> {% endcomment %}
+                <small class="text-muted">9 mins</small>
               </div>
             </div>
 
           </div>
         </div>
+        {% endfor %}
       </div>
     </div>
   </div>

@@ -3,43 +3,66 @@
 <html lang="en">
     <head>
         <title>{% block title %}Auctions{% endblock %}</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" integrity="undefined" crossorigin="anonymous">
+        <link rel="shortcut icon" href="{%  static 'auctions/favicon.ico' %}">
+        {% comment %} <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" integrity="undefined" crossorigin="anonymous"> {% endcomment %}
+        <link href="{% static 'auctions/bootstrap.min.css' %}" rel="stylesheet">
         <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
     </head>
+
     <body>
-        <h1>Auctions</h1>
-        <div>
-            {% if user.is_authenticated %}
-                Signed in as <strong>{{ user.username }}</strong>.
-            {% else %}
-                Not signed in.
-            {% endif %}
+        <div class="container">
+            
+            <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start border-bottom">
+            {% comment %} <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-2 border-bottom"> {% endcomment %}
+                <a href="/" class="navbar-brand d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+                {% comment %} <a href="/" class="navbar-brand d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none"> {% endcomment %}
+                    <img class="bi me-2" style="height:50px;" src="{% static 'auctions/smile.svg.png' %}">
+                    Auctions
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                {% comment %} <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"> {% endcomment %}
+                <ul class="main-menu nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="{% url 'auctions:index' %}" class="nav-link px-2 link-dark">Active Listings</a></li>
+                    <li><a href="{% url 'auctions:view_categories' %}" class="nav-link px-2 link-dark">Categories</a></li>
+                    <li><a href="{% url 'auctions:create' %}" class="nav-link px-2 link-dark">Create Listing</a></li>
+                    <li><a href="{% url 'auctions:watchlist' %}" class="nav-link px-2 link-dark">Watchlist</a></li>
+                    <li><a href="{% url 'auctions:my_listings' %}" class="nav-link px-2 link-dark">My Listings</a></li>
+                    <li><a href="{% url 'auctions:my_bid_listings' %}" class="nav-link px-2 link-dark">My bids</a></li>
+                    
+                    
+                </ul>
+            
+                <div class="col-md-3 text-end">
+                    {% if user.is_authenticated %}
+                        <small>Signed in as <strong>{{ user.username }} </strong></small>
+                        <a type="button" class="btn btn-outline-primary me-2" href="{% url 'auctions:logout' %}">Sign out</a>
+                    {% else %}
+                        {% if request.GET.next %}
+                            <a class="btn btn-outline-primary me-2" href="{% url 'auctions:login' %}?next={{ request.GET.next }}">Login</a>
+                            <a class="btn btn-primary" href="{% url 'auctions:register' %}?next={{ request.GET.next }}">Register</a>
+                        {% else %}
+                            <a class="btn btn-outline-primary me-2" href="{% url 'auctions:login' %}?next={{ request.path }}">Login</a>
+                            <a class="btn btn-primary" href="{% url 'auctions:register' %}?next={{ request.path }}">Register</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </header>
         </div>
-        <ul class="nav">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'auctions:index' %}">Active Listings</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'auctions:create' %}">Create Listing</a>
-            </li>
-            {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'auctions:watchlist' %}">Watchlist</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'auctions:logout' %}">Log Out</a>
-                </li>
-            {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'auctions:login' %}">Log In</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'auctions:register' %}">Register</a>
-                </li>
-            {% endif %}
-        </ul>
-        <hr>
+
         {% block body %}
         {% endblock %}
+
+        <script src="{% static 'auctions/bootstrap.min.js' %}"></script>
+
+        <script>
+            const points = document.querySelectorAll(".main-menu li a");
+            for(let point of points){
+            if(point.href == document.location){
+            point.style.textDecoration = "underline"
+            }}
+        </script>
+
     </body>
 </html>

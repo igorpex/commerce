@@ -1,11 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError, close_old_connections
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from .forms import CreateListingForm, CommentListingForm, BidForm
-# from .forms import AddListingForm
 
 from .models import Comment, Bid, Category, Watchlist, ListingStatus, Listing, User
 from . import utils
@@ -22,12 +22,16 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
 
         # Check if authentication successful
+        next = request.POST.get('next')
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse("auctions:index"))
+            if not next:
+                return HttpResponseRedirect(reverse("auctions:index"))
+            return HttpResponseRedirect(next) #redirect to next page
         else:
             return render(request, "auctions/login.html", {
-                "message": "Invalid username and/or password."
+                "message": "Invalid username and/or password.",
+                "next": next, #save redirect page in case wrong login
             })
     else:
         return render(request, "auctions/login.html")
@@ -43,12 +47,15 @@ def register(request):
         username = request.POST["username"]
         email = request.POST["email"]
 
+        next = request.POST.get('next')
+
         # Ensure password matches confirmation
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
             return render(request, "auctions/register.html", {
-                "message": "Passwords must match."
+                "message": "Passwords must match.",
+                "next": next,
             })
 
         # Attempt to create new user
@@ -57,22 +64,21 @@ def register(request):
             user.save()
         except IntegrityError:
             return render(request, "auctions/register.html", {
-                "message": "Username already taken."
+                "message": "Username already taken.",
+                "next": next,
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("auctions:index"))
+        if not next:
+            return HttpResponseRedirect(reverse("auctions:index"))
+        return HttpResponseRedirect(next) #redirect to next page
     else:
         return render(request, "auctions/register.html")
 
 """Index page - view all open listings"""
 def index(request):
-    # status = ListingStatus.objects.get(id=4)
     status = ListingStatus.objects.get(status='open')
-    # print(status)
     lis = Listing.objects.filter(status=status)
-    # print(listings[1].title)
-    # print(listings[1].description)
-    # listings = utils.get_open_listings()
+
     return render(request, "auctions/index.html", {
                 "lis": lis
             })
@@ -83,6 +89,7 @@ def view_listing(request, li_id):
     """default props"""
     
     bid_message = None
+    can_close = False
 
     """POST BID"""
     if request.method == "POST" and ('bid' in request.POST):
@@ -130,8 +137,9 @@ def view_listing(request, li_id):
             if is_watched:
                 is_watched.delete()
     
+
     """Get Comments list"""
-    comments = Comment.objects.filter(listing=li)
+    comments = Comment.objects.filter(listing=li).order_by('-date')
 
     """Get bids for listing"""
     bids = Bid.objects.filter(listing=li)
@@ -183,10 +191,6 @@ def view_listing(request, li_id):
         "can_close": can_close,
         "winner": winner,
         "bid_message": bid_message,
-        
-        # "is_author": is_author,
-        # form = UserProfileEdit(instance=request.user)
-        # 'message': message,
         }
 
     return render(request, "auctions/listing.html", props)
@@ -266,6 +270,7 @@ def close_auction (request, li_id):
             # li.winner = 
 
 """Create new listing"""
+@login_required
 def create(request):
     if request.method == "POST":
         form = CreateListingForm(request.POST)
@@ -280,26 +285,106 @@ def create(request):
     else:
         return render(request, "auctions/create.html", {"form": CreateListingForm})
 
-"""View Listings of exact category"""
-def category_listings(request):
-    category_id = request.GET["category_id"]
-    utils.get_category_listings(category_id)
 
-"""View users Watchlist Item"""
+"""View user's Watchlist"""
+@login_required
 def watchlist(request):
     status = ListingStatus.objects.get(id=4)
-    # username=request.user.username
     user_id = request.user.id
-    # print(username)
     lis = Listing.objects.filter(status=status, watchlist__watcher=user_id)
-    # Product.objects.filter(company__name="Apple")
-    # print(listings[1].title)
-    # print(listings[1].description)
-    # listings = utils.get_open_listings()
     return render(request, "auctions/watchlist.html", {
                 "lis": lis
             })
 
+
+"""View user's created listings"""
+@login_required
+
+def my_listings(request):
+    user = request.user
+    lis = Listing.objects.filter(creator=user.id)
+    
+
+    for li in lis:
+        """for closed listings"""
+        if li.status.status == "closed":
+            li_status = "closed"
+            """for open listings"""
+        elif li.status.status == "open":
+            li_status = "open"
+        
+        # my_status_dict[li.id] = my_status
+        li.li_status = li_status
+
+    return render(request, "auctions/mylistings.html", {
+            "lis": lis, "li_status": li_status,
+        })
+
+"""View all participated listings (where user bid)"""
+@login_required
+# @login_required(redirect_field_name='auctions:watchlist')
+def my_bid_listings(request):
+
+    user = request.user
+    user_id = user.id
+
+    """Checks all bidded listings"""
+
+    # get all participated listings
+    lis = Listing.objects.filter(bid__author = user_id).distinct()
+    
+    """Get statuses for listings"""
+
+    user = request.user
+    for li in lis:
+        """for closed listings"""
+        if li.status.status == "closed":
+            """Checks if your bid is current based on bid and request.user"""
+            my_bid_is_current = utils.get_your_bid_is_current(li.id, user)
+            if my_bid_is_current:
+                my_status = "won"
+            else:
+                my_status = "lost"
+
+            """for open listings"""
+        elif li.status.status == "open":
+            my_bid_is_current = utils.get_your_bid_is_current(li.id, user)
+            if my_bid_is_current:
+                my_status = "current"
+            else:
+                my_status = "not current"
+        elif li.creator == user:
+            my_status = "my listing"
+        else:
+            my_status = "status unknown"
+        
+        li.my_status = my_status    
+    
+    return render(request, "auctions/my-bid-listings.html", {
+                "lis": lis,
+            })
+
+
+"""View Categories List"""
+def view_categories(request):
+    categories = Category.objects.all()
+    status = ListingStatus.objects.get(status='open')
+    count_all = Listing.objects.filter(status=status).count()
+    return render(request, "auctions/categories.html", {"categories": categories, "count_all": count_all})
+
+
+"""View Listings of exact category"""
+def view_category(request, category_id):
+    status = ListingStatus.objects.get(status='open')
+    category = (Category.objects.get(id=category_id))
+    """for category All Categories(id 1)"""
+    if category_id == 1:
+        lis = Listing.objects.filter(status=status)
+        return render(request, "auctions/category.html", {"lis": lis, "category": category})
+        """for other Categories"""
+    else:
+        lis = Listing.objects.filter(status=status, category=category)
+    return render(request, "auctions/category.html", {"lis": lis, "category": category})
 
 
 # def import_categories(request):

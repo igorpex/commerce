@@ -17,4 +17,60 @@
 .watching_buttons:hover .bt_unwatch {
   display: inline;
 }
+
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+}
+
+.form-signin .checkbox {
+  font-weight: 400;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type='email'] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[type='password'] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.bg-gradient {
+  background-image: var(--bs-gradient) !important;
+}
+
+.my-status.won {
+  background-color: #198754 !important;
+}
+
+.my-status.lost {
+  background-color: #dc3545 !important;
+}
+
+.my-status.current {
+  background-color: #0d6efd !important;
+}
+
+.my-status.not.current {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+}
+
+.li-status.open {
+  background-color: #0d6efd !important;
+}
+
+.li-status.closed {
+  background-color: #6c757d !important;
+}
 /*# sourceMappingURL=styles.css.map */

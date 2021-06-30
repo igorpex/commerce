@@ -1,0 +1,42 @@
+{% extends "auctions/layout.html" %}
+
+ <title>{% block title %}
+    Auctions - Categories
+ {% endblock %}</title>
+
+{% block body %}
+<h2 class="fw-normal text-center">Categories</h2>
+<div class="main">
+    <div class="container px-4 py-5">
+        {% comment %} <h2 class="pb-2 border-bottom">Categories</h2> {% endcomment %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 py-2">
+            {% for category in categories %}
+            <div class="col d-flex align-items-start">
+                <svg class="bi text-muted flex-shrink-0 me-3" width="1.75em" height="1.75em"><use xlink:href="#bootstrap"></use></svg>
+                <div>
+                {% comment %} <h5 class="col-4"><a style="text-decoration: none; color: black;" href="{% url "auctions:view_category" category.id %}">{{ category.name }}: <span style="white-space: nowrap">( {% endcomment %}
+                <span style=""> <h5 class="fw-normal mb-0"><a style="text-decoration: none;" href="{% url "auctions:view_category" category.id %}">{{ category.name }}
+                {% if category.listings > 0 %}
+                    <span style="color: black; white-space: nowrap; font-size: 18px;">
+                {% else %}
+                    <span style="color: gray; white-space: nowrap; font-size: 16px;">
+                {% endif %}
+                
+                {% if category.name == "All Categories" %}
+                    ({{ count_all }})
+                {% else %}
+                    ({{ category.listings }})
+                {% endif %}
+                    </span>
+                    </a></h5>
+                
+                {% comment %} <p>{{ category.description }}</p> {% endcomment %}
+                </div>
+            </div>
+            {% endfor %}
+            {{ counts }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

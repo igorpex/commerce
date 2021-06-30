@@ -1,16 +1,22 @@
 {% extends "auctions/layout.html" %}
 {% comment %} {% extends "auctions/button_watchlist.html" %} {% endcomment %}
 {% load static %} 
+
+
+{% block title %}
+  Auctions - {{ li.title }}
+{% endblock %}
+
 {% block body %}
-<h2>Active listings</h2>
+{% comment %} <h2>Active listings</h2> {% endcomment %}
 <div class="main">
-  <div class="album py-5 bg-light">
+  <div class="album py-2 bg-light">
     <div class="container">
     
 {% comment %} image {% endcomment %}
-      <div class="card mb-3" style="max-width: 900px;">
+      <div class="card mb-3">
         <div class="row g-0">
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="card-body">
               <h4 class="card-title">{{ li.title }}</h4>
                 {% if li.imageurl %}
@@ -21,7 +27,7 @@
             </div>
           </div>
 
-          <div class="col-md-8">
+          <div class="col-md-6">
             <div class="card-body">
             <div>
 {% comment %} Price {% endcomment %}
@@ -76,7 +82,10 @@
                   </div>
                 {% endif %}
               {% else %}
-                <p><a class="link" href="{% url 'auctions:login' %}">Log in</a> to bid</p>
+
+                <div style="clear:both">
+                  <p><a class="link" href="{% url 'auctions:login' %}?next={{ request.path }}">Log in</a> to bid</p>
+                </div>
               {% endif %}
 
               {% comment %} <small class="text-muted fw-light">Start price: ${{ li.startprice }}</small> {% endcomment %}
@@ -161,7 +170,7 @@
       {% else %}
             <div class="comments-form">
                 <div class='mb-3'>
-                <p><a class="link" href="{% url 'auctions:login' %}">Log in</a> to comment</p>
+                <p><a class="link" href="{% url 'auctions:login' %}?next={{ request.path }}">Log in</a> to comment</p>
                 </div>
             </div>
       {% endif %}

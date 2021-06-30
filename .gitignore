@@ -1,12 +1,5 @@
 
 .vscode/
-db.sqlite3
-CategoryIDs-AU.csv
-categories_options.html
-categories.html
-db.sqlite3
-passes.txt
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

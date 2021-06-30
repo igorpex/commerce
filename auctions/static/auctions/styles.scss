@@ -2,7 +2,6 @@
     padding: 10px;
 } */
 
-
 /* Watchist buttons */
 
 .watching_buttons {
@@ -10,7 +9,7 @@
 }
 
 .watching_buttons .bt_unwatch {
-display: none;
+  display: none;
 }
 
 .watching_buttons:hover .bt_watching {
@@ -18,5 +17,110 @@ display: none;
 }
 
 .watching_buttons:hover .bt_unwatch {
-display: inline;
+  display: inline;
 }
+
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+}
+
+.form-signin .checkbox {
+  font-weight: 400;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type='email'] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[type='password'] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+@mixin bg-primary {
+  background-color: #0d6efd !important;
+}
+@mixin bg-secondary {
+  background-color: #6c757d !important;
+}
+@mixin bg-success {
+  background-color: #198754 !important;
+}
+@mixin bg-info {
+  background-color: #0dcaf0 !important;
+}
+@mixin bg-warning {
+  background-color: #ffc107 !important;
+}
+@mixin bg-danger {
+  background-color: #dc3545 !important;
+}
+@mixin bg-light {
+  background-color: #f8f9fa !important;
+}
+@mixin bg-dark {
+  background-color: #212529 !important;
+}
+@mixin bg-body {
+  background-color: #fff !important;
+}
+@mixin bg-white {
+  background-color: #fff !important;
+}
+@mixin bg-transparent {
+  background-color: transparent !important;
+}
+
+@mixin text-dark {
+  color: #212529 !important;
+}
+@mixin text-white {
+  color: #fff !important;
+}
+
+.bg-gradient {
+  background-image: var(--bs-gradient) !important;
+}
+
+.my-status.won {
+  @include bg-success();
+  // color: green;
+}
+
+.my-status.lost {
+  @include bg-danger();
+  // color: green;
+}
+
+.my-status.current {
+  @include bg-primary();
+  // color: red;
+}
+
+.my-status.not.current {
+  @include bg-warning();
+  @include text-dark();
+  // color: red;
+}
+
+.li-status.open {
+  @include bg-primary();
+  // color: red;
+}
+
+.li-status.closed {
+  @include bg-secondary();
+  // color: red;
+}
+
+// <span class="li-status badge {{ li.li_status }}">{{ li.li_status }}

@@ -55,7 +55,6 @@ const compose_email = (emailToReply) => {
   document.querySelector('#email-view').style.display = 'none';
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
-  console.log(emailToReply);
 
   if (emailToReply) {
     // Pre-fill values for reply
@@ -248,9 +247,9 @@ function viewEmail(email_id, mailbox) {
       document.querySelector('#email-view').innerHTML = ``;
       let $emailHtml = `
       
-      <strong>From</strong>: ${email.sender}
-      <strong>To</strong>: ${email.recipients}
-      <strong>Date</strong>${email.timestamp}
+      <strong>From: </strong> ${email.sender}
+      <strong> To: </strong>${email.recipients}
+      <strong> Date: </strong>${email.timestamp}
       <hr>
       <h3>${email.subject}</h3>
       <div>${email.body}</div>
@@ -323,6 +322,9 @@ async function onSubmit(event) {
         $error = '';
       } else {
         // Redirect to Sent mailbox in 1000 ms if no errors
+        // clean errors container
+        document.querySelector('#compose-error').innerHTML = '';
+
         setTimeout(() => {
           load_sent_mailbox('sent');
         }, 1000);

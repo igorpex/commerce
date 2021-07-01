@@ -1,13 +1,22 @@
 document.addEventListener('DOMContentLoaded', function () {
   // Use buttons to toggle between views
-  document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
-  document.querySelector('#sent').addEventListener('click', () => load_sent_mailbox('sent'));
-  document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-  document.querySelector('#compose').addEventListener('click', () => compose_email());
+  document.querySelector('#inbox').onclick = () => load_mailbox('inbox');
+  document.querySelector('#sent').onclick = () => load_sent_mailbox('sent');
+  document.querySelector('#archived').onclick = () => load_mailbox('archive');
+  document.querySelector('#compose').onclick = () => compose_email();
 
   // By default, load the inbox
   load_mailbox('inbox');
+
+  // Listen for Submit button
+  const $form = document.querySelector('#compose-form');
+  $form.addEventListener('submit', onSubmit);
+
+  // Add div to show errors then composing messages
+  document.querySelector('#compose-recipients').insertAdjacentHTML('afterEnd', "<div id='compose-error'></div>");
 });
+
+// Add event listener once, to avoid duplicates
 
 //Utils
 
@@ -41,7 +50,7 @@ const unread = async (email_id) => {
   load_mailbox('inbox');
 };
 
-function compose_email(emailToReply) {
+const compose_email = (emailToReply) => {
   // Show compose view and hide other views
   document.querySelector('#email-view').style.display = 'none';
   document.querySelector('#emails-view').style.display = 'none';
@@ -70,55 +79,7 @@ On ${emailToReply.timestamp} ${emailToReply.sender} wrote: \n` + emailToReply.bo
     document.querySelector('#compose-subject').value = '';
     document.querySelector('#compose-body').value = '';
   }
-
-  // Listen for Submit button
-  const $form = document.querySelector('#compose-form');
-  subject: document.querySelector('#compose-recipients').insertAdjacentHTML('afterEnd', "<div id='compose-error'></div>");
-
-  // Submit functionality
-  $form.addEventListener('submit', (e) => {
-    // Prevent default submission
-    e.preventDefault();
-    // Form button
-    $sendButton = document.querySelector('#compose-button');
-    // Frozen for 500ms to avoid duplicate submits
-    $sendButton.disabled = true;
-    setTimeout(() => ($sendButton.disabled = false), 500);
-
-    // Post email
-    fetch('/emails', {
-      method: 'POST',
-      body: JSON.stringify({
-        recipients: document.querySelector('#compose-recipients').value,
-        subject: document.querySelector('#compose-subject').value,
-        body: document.querySelector('#compose-body').value,
-      }),
-      credentials: 'include', //to work with Firefox
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        // Process response result
-
-        if (result.error) {
-          // In case of errors
-          $error = `<p id="error">${result.error}</p>`;
-          document.querySelector('#compose-error').innerHTML = $error;
-          $error = '';
-        } else {
-          // Redirect to Sent mailbox in 1000 ms if no errors
-          setTimeout(() => {
-            load_sent_mailbox('sent');
-          }, 1000);
-        }
-      })
-      // Catch any errors and log them to the console
-      .catch((error) => {
-        console.log('Error:', error);
-      });
-    // Prevent default submission
-    // return false;
-  });
-}
+};
 
 function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
@@ -163,9 +124,13 @@ function load_mailbox(mailbox) {
           }
 
           // Listener for clicks
-          $row.addEventListener('click', function () {
+          // $row.addEventListener('click', function () {
+          //   viewEmail(email.id, mailbox);
+          // });
+
+          $row.onclick = () => {
             viewEmail(email.id, mailbox);
-          });
+          };
 
           $table.append($row);
         });
@@ -218,9 +183,15 @@ function load_sent_mailbox(mailbox) {
           $row = document.createElement('tr');
           $row.innerHTML = `<td>${email.recipients}</td><td>${email.subject}</td><td>${email.timestamp}</td>`;
           $row.style.background = '#ededed';
+
           $row.addEventListener('click', function () {
             viewEmail(email.id, mailbox);
           });
+
+          $row.onclick = () => {
+            viewEmail(email.id, mailbox);
+          };
+
           $table.append($row);
         });
 
@@ -302,13 +273,65 @@ function viewEmail(email_id, mailbox) {
         }),
       });
 
-      // Use menu to make actions;
-      emailMenuItems.$archive.addEventListener('click', () => archive(email_id));
-      emailMenuItems.$unarchive.addEventListener('click', () => unarchive(email_id));
-      emailMenuItems.$reply.addEventListener('click', () => compose_email(email));
-      emailMenuItems.$unread.addEventListener('click', () => unread(email_id));
+      // Get rid of too many event listeners, change to onclick.
+      emailMenuItems.$archive.onclick = () => {
+        archive(email_id);
+      };
+      emailMenuItems.$unarchive.onclick = () => {
+        unarchive(email_id);
+      };
+      emailMenuItems.$reply.onclick = () => {
+        compose_email(email);
+      };
+      emailMenuItems.$unread.onclick = () => {
+        unread(email_id);
+      };
     })
     .catch((error) => {
       console.log('Error:', error);
     });
+}
+
+// Submit functionality
+async function onSubmit(event) {
+  // Prevent default submission
+  event.preventDefault();
+  // Form button
+  $sendButton = document.querySelector('#compose-button');
+  // Frozen for 500ms to avoid duplicated submits (found that it was not actually a problem, it was duplicated listeners)
+  $sendButton.disabled = true;
+  setTimeout(() => ($sendButton.disabled = false), 500);
+
+  // Post email
+  await fetch('/emails', {
+    method: 'POST',
+    body: JSON.stringify({
+      recipients: document.querySelector('#compose-recipients').value,
+      subject: document.querySelector('#compose-subject').value,
+      body: document.querySelector('#compose-body').value,
+    }),
+    credentials: 'include', //to work with Firefox
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      // Process response result
+
+      if (result.error) {
+        // In case of errors
+        $error = `<p id="error">${result.error}</p>`;
+        document.querySelector('#compose-error').innerHTML = $error;
+        $error = '';
+      } else {
+        // Redirect to Sent mailbox in 1000 ms if no errors
+        setTimeout(() => {
+          load_sent_mailbox('sent');
+        }, 1000);
+      }
+    })
+    // Catch any errors and log them to the console
+    .catch((error) => {
+      console.log('Error:', error);
+    });
+  // Prevent default submission
+  // return false;
 }

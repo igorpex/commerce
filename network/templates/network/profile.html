@@ -1,0 +1,10 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <p>Username: {{ profile_user.username }}</p>
+    <p>Following: {{ profile_user.following }}</p>
+    <p>Followers: {{ profile_user.followers }}</p>
+    <p>Follow status: {{ is_following }}</p>
+    <p>Follow button: <a href="{% url 'test_follow' profile_user.username%}"> Follow </a>/p>
+    <p>Unfollow button: <a href="{% url 'test_unfollow' profile_user.username %}"> Unfollow </a>/p>
+{% endblock %}

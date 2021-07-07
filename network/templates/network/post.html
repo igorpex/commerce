@@ -1,0 +1,13 @@
+{% extends "network/layout.html" %} 
+
+{% block body %}
+    <p>Author: {{ post.author }}</p>
+    <p>Date: {{ post.timestamp }}</p>
+    <p>Post body:</p>
+    <p>{{ post.body }}</p>
+
+    <p>Likes: {{ post.likes }}</p>
+    <p>Like status: {{ my_like }}</p>
+    <p>Like button: <a href="{% url 'test_like' post.id %}"> Like </a>/p>
+    <p>Unlike button: <a href="{%url 'test_unlike' post.id %}"> Unlike </a>/p>
+{% endblock %}

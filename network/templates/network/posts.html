@@ -1,0 +1,21 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+    {% for post in posts %}
+    <div style="border:1px black solid">
+        <p>Author: {{ post.author }} <a href="{% url 'test_view_profile' post.author %}">View Profile</a></p>
+        <p>Date: {{ post.timestamp }}</p>
+        <p>Post body:</p>
+        <p>{{ post.body }}</p>
+
+        {% comment %} <p>Like status: {{ my_likes.post.id }}</p> {% endcomment %}
+        <p>Like button: <a href="{% url 'test_like' post.id %}"> Like </a></p>
+        <p>Unlike button: <a href="{%url 'test_unlike' post.id %}"> Unlike </a></p>
+        <p><a href="{% url 'test_view_post' post.id %} ">Open Post: {{ post }}</a> </p>
+    </div>
+    {% empty %}
+        <h1>No posts yet</h1>
+    {% endfor %}
+    
+{% endblock %}
